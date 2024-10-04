@@ -1,0 +1,306 @@
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    background-color: #000000;
+    color: white;
+}
+/*server side*/
+.server-side {
+    width: 60px;
+    background-color: #000000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+.server-side span {
+    display: inline-block; /* Ensure the span behaves as a block to rotate it */
+    transform: rotate(-90deg); /* Rotate the text 90 degrees counterclockwise */
+    color: white; /* Optional: Change text color for better visibility */
+    font-size: 60px; /* Optional: Adjust font size as needed */
+    white-space: nowrap; /* Prevent the text from wrapping */
+    margin-top: 40vh
+}
+.icon-container {
+    display: flex;
+    width: 40px;
+    height: 40px;
+    border:#72767D;
+    background-color: rgb(45,51,69);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center ;
+    margin: 5px 0px;
+}
+.server-side .smaller-icon{
+    width: 20px;
+    height: 20px;
+    margin: 10px 0;
+    border-radius:50%;
+}
+.server-side img {
+    width: 40px;
+    height: 40px;
+    margin: 10px 0;
+    border-radius: 50%;
+}
+.dividing-line{
+    margin-top: 10px;
+    width: 40px;
+    height: 1px;
+    background-color: grey;
+    border-radius: 50%;
+}
+/*when server be selected*/
+.selected-server {
+    width: 60px;
+    display: flex;
+    align-items: center;
+    position:relative;
+}
+.server-side .selected-server-img{
+    border:solid white;
+    
+}
+.selected-line {
+    width: 2px;
+    background-color: white;
+    height: 30px;
+    position: absolute;
+    border-radius: 0% 50% 50% 0%;
+    left: 0;
+}
+.server-side .selected-server-img{
+    margin-left: 10px;
+}
+
+/*channel-side*/
+.channel-side {
+display: flex;
+margin-top: 20px;
+border-radius: 5px 5px 0 0; 
+overflow: hidden; 
+width: 100%; 
+}
+.dividing-line-channel {
+    margin-top: 10px;
+    width: 100%;
+    height: 1px;
+    background-color: rgb(33, 40, 44);
+    border-radius: 50%;
+    
+}
+.title-live-now{
+    font-weight: 400;
+    font-size: 13px;
+}
+.live-now-container-header{
+    display: flex;
+    margin-top: 10px;
+    position: relative;
+}
+.live-now-container{
+    display: flex;
+    flex-direction: column;
+    
+}
+.listen-in-button{
+    margin-top: 10px;
+    position: relative;
+    align-self: center;
+    justify-content: center;
+    background-color: green;
+    border:none;
+    border-radius:5px;
+    width: 90%;
+    height: 30px;
+}
+.button-text {
+
+    font-size: 12px;
+    color: white;
+}
+.green-point {
+    border-radius: 100%;
+    width: 10px;
+    height: 10px;
+    background-color: greenyellow;
+    margin-right: 5px;
+}
+.avatar-green-point {
+    border-radius: 100%;
+    width: 10px;
+    height: 10px;
+    background-color: greenyellow;
+    margin-right: 5px;
+    position:absolute;
+    bottom:5px;
+    left: 37px;
+}
+.live-now-font{
+    color:greenyellow;
+    font-size: 12px;
+    font-weight: 500px;
+}
+
+/* Channel List */
+.icon-authentication {
+    width: 15px;
+    height: 15px;
+    margin-right: 10px;
+}
+.channel-header-container {
+    font-size: 15px;
+    font-weight: 300;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    position:relative
+}
+.pull-icon {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    right: 0;
+}
+.channel-list {
+    width: 240px;
+    background-color: #2F3136;
+    position:relative;
+    
+}
+.channel-header {
+    font-size: 15px;
+    font-weight: 300;
+    margin-bottom: 10px;
+}
+.channel {
+    margin: 10px 0;
+    padding: 10px; /* 增加内边距，使内容不至于贴边 */
+    color: #B9BBBE;
+    cursor: pointer;
+    border-radius: 5px; /* 圆角效果 */
+    transition: background-color 0.3s, color 0.3s; /* 平滑过渡效果 */
+}
+
+.channel:hover {
+    background-color: #7e88a0; /* 悬停时的背景色 */
+}
+
+.channel.active {
+    color: white;
+    background-color: #36393F; /* 选中时的背景色 */
+    border-radius: 5px; /* 确保选中状态的圆角 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* 添加阴影以突出显示 */
+}
+/* Chat Area */
+.chat-area {
+    flex-grow: 1;
+    background-color: #36393F;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.chat-header {
+    background-color: #2F3136;
+    padding: 10px;
+    font-size: 22px;
+    color: rgb(179, 187, 197);
+    border-bottom: 1px solid #23272A;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.chat-messages {
+    padding: 20px;
+    flex-grow: 1;
+    overflow-y: auto;
+    scrollbar-color: #36393F rgb(179, 187, 197);
+    scrollbar-width: thin;
+}
+
+.message {
+    margin-bottom: 15px;
+    
+}
+
+/* Message Input */
+.message-input {
+    background-color: #40444B;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+}
+
+.message-input input {
+    width: 100%;
+    padding: 10px;
+    background-color: #303338;
+    outline: none;
+    border: none;
+    color: white;
+    border-radius: 3px;
+}
+
+.message .timestamp {
+    font-size: 10px;
+    color: #72767D;
+}
+
+.message-input input::placeholder {
+    color: #72767D;
+}
+
+/* Client List */
+.client-list {
+    
+    width: 200px;
+    background-color: #2F3136;
+    padding: 10px;
+    border-left: 1px solid #23272A;
+    overflow-y: auto;
+    display: block; /* Change to block or flex as needed */
+    overflow-y: auto;
+    scrollbar-color: #36393F rgb(179, 187, 197);
+    scrollbar-width: thin;
+}
+
+.client-list-item {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.client-list-item:hover {
+    background-color: #36393F;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+
+/* Default (non-active) state */
+.show-clients {
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+/* Hover effect */
+.show-clients:hover {
+    background-color: #7e88a0;
+}
+
+/* Active state */
+.show-clients.active {
+    background-color: #36393F;
+    transform: scale(1.3); /* 放大元素 */
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
