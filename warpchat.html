@@ -68,7 +68,6 @@
                             <div id="client-list" class="client-list"></div>
                         </div>
 
-                        <!-- Message Input -->
                         <div class="message-Input-Area">
                             <div style="position:relative;width: 96%;margin-left: 2%">
                                 <div class="message-input">
@@ -121,8 +120,8 @@
         console.log("Connection established.");
 
         room_list = wt.availableRooms;
-        let room = wt.join(wt.availableRooms[0].name);
-        current_room = room;
+        // let room = wt.join(wt.availableRooms[0].name);
+        // current_room = room;
 
         // Render rooms, clients, and messages after connecting
         setTimeout(() => {
@@ -161,9 +160,13 @@
 
     // Function for rendering all rooms
     function renderRooms() {
-
+        let current_room_name;
         const roomListElement = document.getElementById("room-list");
-        let current_room_name = current_room.name;
+        if (current_room !== undefined) {
+            current_room_name = current_room.name;
+        } else {
+            current_room_name = "";
+        }
 
         // Record which rooms the user is in
         const roomNameUserIsIn = Object.keys(roomUserIsIn);
