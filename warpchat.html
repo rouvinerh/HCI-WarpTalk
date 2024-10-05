@@ -127,26 +127,11 @@
         // Render rooms, clients, and messages after connecting
         setTimeout(() => {
             renderRooms();
-            printCurrentClients();
         }, 30);
 
         // document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
         //        <span style="color:rgb(179, 187, 197);font-size:14px;font-weight:200;"> | ${current_room.description}</span>`;
 
-        setTimeout(() => {
-            joinRoom();
-            printCurrentClients();
-        }, 40);
-
-        // setTimeout(() => {
-        //    receiveMessage();
-        //    printCurrentClients();
-        // }, 50);
-
-        setTimeout(() => {
-            leaveRoom();
-            printCurrentClients();
-        }, 60);
 
         // CLIENT NAME
         document.getElementById('client-name').innerHTML = "Client Name: " + nickname;
@@ -226,7 +211,7 @@
                         setTimeout(() => joinRoom(), 50);
                         setTimeout(() => leaveRoom(), 50);
                         setTimeout(() => receiveMessage(), 60);
-                        setTimeout(() => printCurrentClients(), 70);
+                        setTimeout(() => printCurrentClients(current_room), 70);
                     }
 
                     renderRooms();
@@ -270,7 +255,7 @@
 
         current_room.onJoin((room, nickname) => {
             document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
-            printCurrentClients()
+            printCurrentClients(room)
         });
 
     }
@@ -279,24 +264,28 @@
     function leaveRoom() {
         // Listen to users in all rooms leave current room
         const roomNameUserIsIn = Object.keys(roomUserIsIn);
-
-
         current_room.onLeave((room, nickname) => {
             document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
-            printCurrentClients()
+            printCurrentClients(room)
+            console.log(room)
         });
 
     }
 
     // Function for printing current clients
-    function printCurrentClients() {
-        const clients = current_room.clients || [];
-        console.log(clients);
-        let client_list_element = document.getElementById("client-list-" + current_room.name);
+    // room_tmp design for callback function
+    function printCurrentClients(room_tmp) {
+        const clients = room_tmp.clients || [];
+        console.log(room_tmp);
+        let client_list_element = document.getElementById("client-list-" + room_tmp.name);
         client_list_element.innerHTML = ""; // Clear the client list
         client_list_element.innerHTML += `<div class="client-list-header">Client List</div>`; // 添加标题
         clients.forEach(client => {
-            client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}</div>`;
+            if (client.registered !== undefined) {
+                client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}(registered)</div>`;
+            } else {
+                client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}</div>`;
+            }
         });
     }
 
