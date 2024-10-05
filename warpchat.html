@@ -182,7 +182,7 @@
         room_list.forEach(r => {
             if (r.name === current_room_name) {
                 roomListElement.innerHTML += `
-            <div id="${r.name}" class="channel active" style="pointer-events: none;">
+            <div id="${r.name}" class="channel active">
                 <span style="color: white; font-size: 13px;">${r.name}</span>
             </div>`;
             } else {
@@ -209,20 +209,20 @@
 
             room_list.forEach(r => {
                 if (idString === r.name) {
-                    // current_room.listeners = [];
-                    // current_room.joinListeners = [];
-                    // current_room.leaveListeners = [];
-
                     // wt.leave(current_room.name);
 
                     current_room = wt.join(idString);
                     roomUserIsIn = wt.joinedRooms;
                     addChatBox();
 
-                    setTimeout(() => joinRoom(), 50);
-                    setTimeout(() => leaveRoom(), 50);
-                    setTimeout(() => receiveMessage(), 60);
-                    setTimeout(() => printCurrentClients(), 70);
+                    // Avoid duplicating listener additions on hide and leave
+                    console.log(current_room)
+                    if (current_room.listeners.length === 0) {
+                        setTimeout(() => joinRoom(), 50);
+                        setTimeout(() => leaveRoom(), 50);
+                        setTimeout(() => receiveMessage(), 60);
+                        setTimeout(() => printCurrentClients(), 70);
+                    }
 
                     renderRooms();
                     // document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
@@ -270,7 +270,7 @@
 
     }
 
-    // Handle leaving room
+    // Handle leaving room => leaveListener
     function leaveRoom() {
         // Listen to users in all rooms leave current room
         const roomNameUserIsIn = Object.keys(roomUserIsIn);
@@ -362,7 +362,9 @@
         // Listen to users in all rooms leave current room
         const roomNameUserIsIn = Object.keys(roomUserIsIn);
 
-
+        if (document.getElementById("chat-box-" + chatBoxName) !== null) {
+            return;
+        }
 
         chatMessagesElement.innerHTML += `
         <div id="chat-box-${chatBoxName}" class="chat-box">
@@ -407,17 +409,6 @@
         current_room = wt.join(current_room_name);
         initializeDragging();
 
-        // const roomNameUserIsIn = Object.keys(roomUserIsIn);
-        // roomNameUserIsIn.forEach(room => {
-        //     console.log(roomUserIsIn[room])
-        // });
-
-        console.log("2")
-        console.log(current_room)
-        console.log(current_room.listeners)
-
-
-
         // to set z-index
         const chatBoxes = document.querySelectorAll('.chat-box');
 
@@ -450,7 +441,43 @@
         });
     });
 
+    // Event listener for minimizing chat boxes using the minimize button
+    document.querySelector('.chat-messages').addEventListener('click', function (event) {
+        const clickedElement = event.target;
+        const elementId = clickedElement.id;
+        let idArray = elementId.split("-");
+        let current_room_name = idArray[idArray.length - 1];
 
+        if (elementId.includes('to-hide')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            chatBox.classList.add('chat-box-hidden');
+        }
+    });
+
+    // show chat-box again when click on siderbar
+    document.getElementById("room-list").addEventListener('click', function (e) {
+        const clickedElement = e.target;
+        const idString = clickedElement.id;
+        console.log(idString)
+        if (idString !== "") {
+            const chatBox = document.getElementById(`chat-box-${idString}`);
+            chatBox.classList.remove('chat-box-hidden');
+        }
+    });
+
+    // Event listener for leave room by using the close button and delete the chat-box
+    document.querySelector('.chat-messages').addEventListener('click', function (event) {
+        const clickedElement = event.target;
+        const elementId = clickedElement.id;
+        let idArray = elementId.split("-");
+        let current_room_name = idArray[idArray.length - 1];
+
+        if (elementId.includes('to-leave')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            wt.leave(current_room_name);
+            chatBox.remove();
+        }
+    });
 
 
 </script>

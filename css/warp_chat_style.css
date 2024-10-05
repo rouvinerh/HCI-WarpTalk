@@ -347,3 +347,7 @@ width: 100%;
 .chat-box-h-index{
     z-index: 999;
 }
+
+.chat-box-hidden { 
+    display: none;
+}
