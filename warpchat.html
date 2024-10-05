@@ -134,10 +134,10 @@
             printCurrentClients();
         }, 40);
 
-        setTimeout(() => {
-            receiveMessage();
-            printCurrentClients();
-        }, 50);
+        // setTimeout(() => {
+        //    receiveMessage();
+        //    printCurrentClients();
+        // }, 50);
 
         setTimeout(() => {
             leaveRoom();
@@ -204,28 +204,25 @@
     document.getElementById("room-list").addEventListener('click', function (e) {
         const clickedElement = e.target;
         const idString = clickedElement.id;
-        console.log(wt)
         if (idString !== "") {
             // console.log("Switching to room: " + idString);
 
             room_list.forEach(r => {
                 if (idString === r.name) {
-                    current_room.listeners = [];
-                    current_room.joinListeners = [];
-                    current_room.leaveListeners = [];
+                    // current_room.listeners = [];
+                    // current_room.joinListeners = [];
+                    // current_room.leaveListeners = [];
 
                     // wt.leave(current_room.name);
 
                     current_room = wt.join(idString);
-                    addChatBox();
                     roomUserIsIn = wt.joinedRooms;
+                    addChatBox();
 
-                    console.log(current_room)
                     setTimeout(() => joinRoom(), 50);
+                    setTimeout(() => leaveRoom(), 50);
                     setTimeout(() => receiveMessage(), 60);
                     setTimeout(() => printCurrentClients(), 70);
-                    document.getElementById("message-list").innerHTML = ""; // Clear messages
-
 
                     renderRooms();
                     // document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
@@ -235,51 +232,55 @@
         }
     });
 
-    // Handle receiving messages
+    // Installation of the listner for each rooms to receive messages
     function receiveMessage() {
-        console.log("receiveMessage")
         if (roomUserIsIn === "undefined" || roomUserIsIn === null) {
             return;
         }
-        console.log(roomUserIsIn)
-        const roomNameUserIsIn = Object.keys(roomUserIsIn);
-        roomNameUserIsIn.forEach(room => {
-            roomUserIsIn[room].onMessage((room, msg) => {
-                console.log(msg);
-                console.log(room);
-                const current_room_name = room.name;
-                const messageContent = `
+
+        current_room.onMessage((room, msg) => {
+            const current_room_name = room.name;
+
+            const messageContent = `
                 <div style="margin-left: 10px; margin-top: 10px">
                     <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
                     <span class="timestamp">${new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
                     <div class="content">${msg.message}</div>
                 </div>`;
-                if (msg.room === current_room_name) {
-                    document.getElementById("message-list-" + room.name).innerHTML += messageContent;
-                }
-            });
-        })
-    }
 
-    // Handle joining room
-    function joinRoom() {
-        document.getElementById("message-list").innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
-        current_room.onJoin((room, nickname) => {
-            if (document.querySelector('#room-list .channel.active').id === room.name) {
-                document.getElementById("message-list").innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
-            }
-
-            printCurrentClients()
+            document.getElementById("message-list-" + room.name).innerHTML += messageContent;
         });
+
     }
+
+    // Handle joining room => joinListener
+    function joinRoom() {
+        // for user self
+        let current_room_element = document.getElementById("message-list-" + current_room.name)
+        if (current_room_element !== null) {
+            current_room_element.innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
+        }
+
+        // Listen to all rooms that have been joined
+
+        current_room.onJoin((room, nickname) => {
+            document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
+            // printCurrentClients()
+        });
+
+    }
+
     // Handle leaving room
     function leaveRoom() {
+        // Listen to users in all rooms leave current room
+        const roomNameUserIsIn = Object.keys(roomUserIsIn);
+
+
         current_room.onLeave((room, nickname) => {
-            if (document.querySelector('#room-list .channel.active').id === room.name) {
-                document.getElementById("message-list").innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
-            }
-            printCurrentClients()
+            document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
+            // printCurrentClients()
         });
+
     }
 
     // Function for printing current clients
@@ -315,7 +316,7 @@
         let currentChartBoxHeaderName = 'chat-box-header-' + current_room.name;
         let chatBox = document.getElementById(currentChatBoxName);
         let chatBoxHeader = document.getElementById(currentChartBoxHeaderName);
-        console.log(chatBoxHeader, chatBox)
+
         // offsetX and offsetY means the total offset from the start of dragging to the current position
         // clientX: the horizontal coordinate (in pixels) of the mouse pointer relative to the left edge of the browser viewport.
         // clientY: the vertical coordinate of the mouse pointer relative to the top edge of the browser viewport(in pixels).
@@ -357,6 +358,12 @@
     function addChatBox() {
         const chatMessagesElement = document.querySelector('.chat-messages');
         let chatBoxName = current_room.name;
+
+        // Listen to users in all rooms leave current room
+        const roomNameUserIsIn = Object.keys(roomUserIsIn);
+
+
+
         chatMessagesElement.innerHTML += `
         <div id="chat-box-${chatBoxName}" class="chat-box">
                         <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
@@ -400,6 +407,17 @@
         current_room = wt.join(current_room_name);
         initializeDragging();
 
+        // const roomNameUserIsIn = Object.keys(roomUserIsIn);
+        // roomNameUserIsIn.forEach(room => {
+        //     console.log(roomUserIsIn[room])
+        // });
+
+        console.log("2")
+        console.log(current_room)
+        console.log(current_room.listeners)
+
+
+
         // to set z-index
         const chatBoxes = document.querySelectorAll('.chat-box');
 
@@ -430,12 +448,8 @@
                 msgInputElement.value = '';
             }
         });
-
-
     });
 
-
-    // Handle leaving room
 
 
 
