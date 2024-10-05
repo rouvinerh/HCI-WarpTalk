@@ -80,7 +80,7 @@ body {
 /*channel-side*/
 .channel-side {
 display: flex;
-margin-top: 20px;
+
 border-radius: 5px 5px 0 0; 
 overflow: hidden; 
 width: 100%; 
@@ -167,7 +167,7 @@ width: 100%;
     right: 0;
 }
 .channel-list {
-    width: 240px;
+    width: 180px;
     background-color: #2F3136;
     position:relative;
     
@@ -227,16 +227,19 @@ width: 100%;
 
 .message {
     margin-bottom: 15px;
-    
+    height: 80vh;
+    overflow:scroll;
+    overflow-x:hidden;
 }
 
 /* Message Input */
 .message-input {
     background-color: #40444B;
-    padding: 10px;
+    padding: 3px;
     display: flex;
     align-items: center;
-    border-radius: 10px;
+    border-radius: 3px;
+    margin-bottom: 10px;
 }
 
 .message-input input {
@@ -303,4 +306,44 @@ width: 100%;
     transform: scale(1.3); /* 放大元素 */
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.chat-box {
+    width: 40%;
+    height: 60%;
+    background-color: #1a1f27;
+    border-radius: 10px;
+    position: absolute;
+    top: 3%;
+    left: 3%;
+    z-index: 10;
+    display: flex;
+    flex-direction: column; 
+    
+}
+
+.chat-box-header {
+    height: 5vh;
+    background-color: #5b5e68;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    cursor: move;
+    
+}
+
+.chat-box-header-buttons {
+    display: flex; 
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.chat-box-header-buttons i {
+    margin-left: 3px; 
+    cursor: pointer; 
+}
+
+.chat-box-h-index{
+    z-index: 999;
 }
