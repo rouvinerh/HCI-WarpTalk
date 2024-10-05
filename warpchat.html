@@ -62,9 +62,14 @@
                                 <i class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
                             </div>
                         </div>
-                        <div id="message-list" class="message"></div>
+
+                        <div class="chat-content">
+                            <div id="message-list" class="message"></div>
+                            <div id="client-list" class="client-list"></div>
+                        </div>
+
                         <!-- Message Input -->
-                        <div style="display: flex;">
+                        <div class="message-Input-Area">
                             <div style="position:relative;width: 96%;margin-left: 2%">
                                 <div class="message-input">
                                     <input id="msg-input" type="text" placeholder="Say hello to everyone">
@@ -82,8 +87,7 @@
 
 
             </div>
-            <div style="display: none;" id="client-list" class="client-list">
-            </div>
+
         </div>
     </div>
 </body>
@@ -172,6 +176,7 @@
 
     // Function for rendering all rooms
     function renderRooms() {
+
         const roomListElement = document.getElementById("room-list");
         let current_room_name = current_room.name;
 
@@ -265,7 +270,7 @@
 
         current_room.onJoin((room, nickname) => {
             document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
-            // printCurrentClients()
+            printCurrentClients()
         });
 
     }
@@ -278,7 +283,7 @@
 
         current_room.onLeave((room, nickname) => {
             document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
-            // printCurrentClients()
+            printCurrentClients()
         });
 
     }
@@ -286,13 +291,16 @@
     // Function for printing current clients
     function printCurrentClients() {
         const clients = current_room.clients || [];
-        let client_list_element = document.getElementById("client-list");
+        console.log(clients);
+        let client_list_element = document.getElementById("client-list-" + current_room.name);
         client_list_element.innerHTML = ""; // Clear the client list
-        client_list_element.innerHTML += `<div style="display:flex;justify-content:center;font-size:17px;margin-bottom:10px;" >client list</div>`;
+        client_list_element.innerHTML += `<div class="client-list-header">Client List</div>`; // 添加标题
         clients.forEach(client => {
             client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}</div>`;
         });
     }
+
+
 
     // Toggle client list visibility
     document.getElementById('show-clients').addEventListener('click', function (e) {
@@ -376,6 +384,7 @@
                             </div>
                         </div>
                         <div id="message-list-${chatBoxName}" class="message"></div>
+                        <div id="client-list-${chatBoxName}" class="client-list"></div>
                         <!-- Message Input -->
                         <div style="display: flex;">
                             <div style="position:relative;width: 96%;margin-left: 2%">
@@ -467,6 +476,7 @@
 
     // Event listener for leave room by using the close button and delete the chat-box
     document.querySelector('.chat-messages').addEventListener('click', function (event) {
+
         const clickedElement = event.target;
         const elementId = clickedElement.id;
         let idArray = elementId.split("-");
@@ -475,6 +485,7 @@
         if (elementId.includes('to-leave')) {
             const chatBox = document.getElementById(`chat-box-${current_room_name}`);
             wt.leave(current_room_name);
+            document.getElementById(current_room_name).classList.remove('active');
             chatBox.remove();
         }
     });
