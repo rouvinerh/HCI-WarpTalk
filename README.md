@@ -7,7 +7,7 @@ Rooms
 
 Messages  
 - [x] Send and receive messages.  
-- [ ] Support (at least) basic formatting of text in messages (bold, italic, underline).  
+- [x] Support (at least) basic formatting of text in messages (bold, italic, underline).  
 - [ ] Handle (as well as possible) if other users send messages with strangely formatted content.  
 
 Nicknames  
