@@ -191,7 +191,8 @@
         document.getElementById('login-container').style.display = 'none';
 
         window.send = function (msg) {
-            room.send(msg);
+            const formattedMsg = parseMessage(msg); // Parse the message before sending
+            current_room.send(formattedMsg); // Send the parsed message to the WebSocket or room
         };
         window.login = function (username, password) {
             wt.login(username, password);
@@ -302,7 +303,7 @@
                 <div style="margin-left: 10px; margin-top: 10px">
                     <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
                     <span class="timestamp">${new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
-                    <div class="content">${msg.message}</div>
+                    <div class="content">${parseMessage(msg.message)}</div>
                 </div>`;
 
             document.getElementById("message-list-" + room.name).innerHTML += messageContent;
@@ -354,7 +355,6 @@
                 client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}</div>`;
             }
         });
-    }
 
 
     function initializeDragging() {
@@ -522,6 +522,65 @@
             chatBox.classList.remove('chat-box-hidden');
         }
     });
+      
+    document.getElementById("msg-input").addEventListener("keydown", (e) => {
+
+        // Bold Ctrl + B
+        if (e.ctrlKey && e.key === "b") {
+            e.preventDefault();
+            wrapSelection("**");
+        }
+
+        // Italic Ctrl + I
+        if (e.ctrlKey && e.key === "i") {
+            e.preventDefault();
+            wrapSelection("*"); 
+        }
+
+        // Underline Ctrl + U
+        if (e.ctrlKey && e.key === "u") {
+            e.preventDefault();
+            wrapSelection("__"); 
+        }
+
+        // Strikethrough Ctrl + S
+        if (e.ctrlKey && e.key === "s") {
+            e.preventDefault();
+            wrapSelection("~~"); 
+        }
+
+        // Monospace ``
+        if (e.ctrlKey && e.key === "`") {
+            e.preventDefault();
+            wrapSelection("`");
+        }
+    });
+
+// Display message with correct format
+// Use regex to parse characters accordingly
+function parseMessage(message) {
+    return message
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')       
+        .replace(/__(.*?)__/g, '<u>$1</u>')       
+        .replace(/~~(.*?)~~/g, '<s>$1</s>')       
+        .replace(/`(.*?)`/g, '<code>$1</code>');  
+}
+
+    // Format selected text with hotkeys
+    function wrapSelection(tag) {
+        const input = document.getElementById("msg-input");
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const text = input.value;
+
+        // Apply format only with the text selected
+        if (start !== end) {
+            input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
+            input.setSelectionRange(end + tag.length, end + tag.length);
+        } 
+        input.focus();
+    }
 
     // Event listener for leave room by using the close button and delete the chat-box
     document.querySelector('.chat-messages').addEventListener('click', function (event) {
@@ -540,6 +599,6 @@
     });
 
 
-</script>
+    </script>
 
-</html>
+    </html>
