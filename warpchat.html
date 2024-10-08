@@ -1,150 +1,494 @@
-    <!DOCTYPE html>
-    <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Discord Chat Interface</title>
-        <link rel="stylesheet" type="text/css" href="./css/warp_chat_style.css">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Chat Interface</title>
+    <!-- <link rel="stylesheet" type="text/css" href="./warp_chat_style.css"> -->
+    <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/wet-eagle-13/warp_chat_style.css">
+</head>
 
-    </head>
+<body>
 
-    <body>
+    <!-- <div class="server-side">
+        <span>Aarhus Universitet :)</span>
+    </div> -->
 
-        <div class="server-side">
-            <span>Aarhus Universitet :)</span>
-        </div>
-
-        <div class="channel-side">
-            <!-- Channel List -->
-            <div class="channel-list">
-                <div style="padding-top: 15px; padding-left: 15px; padding-right: 15px;">
-                    <div class="channel-header-container">
-                        <img class="icon-authentication" src="/static/icon/authentication.png" alt="authentication">
-                        <span>Warp Talk</span>
-                    </div>
-                    <div id="room-list"></div>
+    <div class="channel-side">
+        <!-- Channel List -->
+        <div class="channel-list">
+            <div style="padding-top: 15px; padding-left: 15px; padding-right: 15px;">
+                <div class="channel-header-container">
+                    <img class="icon-authentication" src="https://warp.cs.au.dk/wet-eagle-13/authentication.png"
+                        alt="authentication">
+                    <span>Warp Talk</span>
                 </div>
+                <div id="room-list"></div>
+            </div>
 
-                <div
-                    style="background-color:rgb(36,39,48);display:flex;align-items:center;position:absolute;bottom:0;width:100%;height:8% ">
-                    <div id="client-area" style="display: flex;flex-direction:column;margin-left:2% ">
+            <div
+                style="background-color:rgb(36,39,48);display:flex;align-items:center;position:absolute;bottom:0;width:100%;height:8% ">
+                <div id="client-area" style="display: flex; ">
+
+                    <div style="display: flex;flex-direction:column;margin-left:2%; ">
                         <span id="client-name" style="color: white;font-size:15px">Client Name:</span>
                         <span id="client-status" style="color:rgb(179, 187, 197);font-size:12px">Online</span>
                     </div>
 
-                </div>
-            </div>
-            <div style="display: flex;width:100vw">
-                <!-- Chat Area -->
-                <div class="chat-area">
-                    <!-- Chat Header -->
-                    <div class="chat-header">
-                        <span id="chat-header-text" style="color:white;font-size:17px;font-weight:300;">
-                        </span>
-                        <div style="display: flex;gap:8px;position:absolute;right:15px;align-items:center">
-                            <img id="show-clients" class="show-clients" style="height: 20px; width: 20px;margin-right:7px"
-                                src="/static/icon/people.png" title="show clients" alt="">
-                            <img id="leave" class="show-clients" style="height: 20px; width: 20px;margin-right:7px"
-                                src="/static/icon/leave.png" title="reset the nickname" alt="">
-                        </div>
-                    </div>
-
-                    <!-- Chat Messages -->
-                    <div class="chat-messages">
-                        <div id="message-list" class="message">
-
-                        </div>
-                    </div>
-
-
-                    <!-- Message Input -->
-                    <div style="display: flex;">
-                        <div style="position:relative;width: 90%;">
-                            <div class="message-input">
-                                <input id="msg-input" type="text" placeholder="Say hello to everyone">
-                            </div>
-                        </div>
-                        <div
-                            style="width:7%;display:flex;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
-                            <span id="send-button" style="color: white; font-size: 16px;">send</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="display: none;" id="client-list" class="client-list">
+                    <img id="leave" class="show-clients"
+                        style="height: 20px; width: 20px;margin-right:7px;align-self:center"
+                        src="https://warp.cs.au.dk/wet-eagle-13/leave.png" title="reset the nickname" alt="">
                 </div>
             </div>
         </div>
-    </body>
-    <!-- Load your custom JavaScript after the library -->
-    <script src="https://warp.cs.au.dk/libs/warptalk.js" type="application/javascript"></script>
-    <script type="module">
-        import { wt } from './js/global-params.js';
-        let current_room;
-        let room_list = [];
+        <div style="display: flex;width:100vw">
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <!-- Chat Header -->
 
-        console.log("Connecting to the WarpTalk server ...");
-        let nickname = localStorage.getItem('nickName'); // Retrieve the nickname from localStorage
+                <!-- Chat Messages -->
+                <div class="chat-messages">
 
-        // if there's no nickname while the first page loaded, force users back to the regist page
-        document.addEventListener('DOMContentLoaded', function () {
-            if (nickname === null || nickname === undefined) {
-                alert("please enter the nickname before using")
-                window.location.href = "./login.html"
-            }
-        })
+                    <!-- login-form -->
+                    <div id="login-container" class="login-container">
+                        <h1>Login by account</h1>
+                        <form id="login-Form">
+                            <input id="nickname-Account" type="text" placeholder="Enter your Nickname" />
+                            <input id="nickname-Password" type="password" placeholder="Enter your password" />
+                            <button type="submit">Login</button>
+                        </form>
+                        <span id="using-nickname"
+                            style="display: flex;justify-content:center;margin-top:10px;color:blue;cursor:pointer">
+                            Try using unregistered nick
+                            name</span>
+                    </div>
 
+                    <!-- Chat Box Presenting different chat boxes -->
+                    <div style="display: none;" id="chat-box" class="chat-box">
+                        <div id="chat-box-header" class="chat-box-header">
+                            <span style="align-items:center">HELP</span>
+                            <div class="chat-box-header-buttons">
+                                <i class="fa-solid fa-minus fa-xl" style="color: #8a8f98;padding-right:20px"></i>
+                                <i class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
+                            </div>
+                        </div>
+
+                        <div class="chat-content">
+                            <div id="message-list" class="message"></div>
+                            <div id="client-list" class="client-list"></div>
+                        </div>
+
+                        <div class="message-Input-Area">
+                            <div style="position:relative;width: 96%;margin-left: 2%">
+                                <div class="message-input">
+                                    <input id="msg-input" type="text" placeholder="Say hello to everyone">
+                                </div>
+                            </div>
+                            <div
+                                style="width:7%;display:none;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
+                                <span id="send-button" style="color: white; font-size: 16px;">send</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+
+        </div>
+    </div>
+</body>
+<!-- Load your custom JavaScript after the library -->
+<script src="https://kit.fontawesome.com/c0961f1ff3.js" crossorigin="anonymous"></script>
+<script src="https://warp.cs.au.dk/libs/warptalk.js" type="application/javascript"></script>
+<script type="module">
+
+    // import { wt } from './js/global-params.js';
+    const wt = new WarpTalk("wss", "warp.cs.au.dk/talk/");
+
+    let current_room;
+    let room_list = [];
+
+    // The rooms the user is in now
+    let roomUserIsIn = [];
+
+    console.log("Connecting to the WarpTalk server ...");
+
+    // let nickname = localStorage.getItem('nickName'); // Retrieve the nickname from localStorage
+    let nickname;
+
+    if (localStorage.getItem('login') !== null) {
+        nickname = localStorage.getItem('login');
+    }
+    // if dont have nickname, then dont show the client-area
+    if (nickname === null || nickname === undefined) {
+        document.getElementById('client-area').style.display = 'none';
+    }
+
+
+    let loginForm = document.getElementById('login-Form');
+    let nicknameAccount;
+    let nicknamePassword;
+
+    let nicknameAccountValue;
+    let nicknamePasswordValue;
+    // if there's no nickname while the first page loaded, force users back to the regist page
+    document.addEventListener('DOMContentLoaded', function () {
+        if (nickname === null || nickname === undefined) {
+            nicknameAccount = document.getElementById('nickname-Account');
+            nicknamePassword = document.getElementById('nickname-Password');
+        }
+    })
+
+
+    wt.isLoggedIn(function (isLoggedIn) {
+        if (isLoggedIn) { // If we are already logged in we can call connect that we also give a function to call when the connection has been established
+            wt.connect(connected);
+        }
+    });
+
+    const nickname_e = document.getElementById("using-nickname");
+    nickname_e.addEventListener("click", function (e) {
+        let nickname = prompt("What's your (unregistered) nickname?");
+        nickname = nickname.trim();
         wt.connect(connected, nickname);
+    })
 
-        // This function is called when the connection to the server is established.
-        async function connected() {
-            console.log("Connection established.");
+    // This function is called when the connection to the server is established.
+    async function connected() {
+        console.log("Connection established.");
+        nickname = wt.nickname;
+        room_list = wt.availableRooms;
+        // let room = wt.join(wt.availableRooms[0].name);
+        // current_room = room;
 
-            room_list = wt.availableRooms;
-            let room = wt.join(wt.availableRooms[0].name);
-            current_room = room;
+        // Render rooms, clients, and messages after connecting
+        setTimeout(() => {
+            renderRooms();
+        }, 30);
 
-            // Render rooms, clients, and messages after connecting
-            setTimeout(() => {
-                renderRooms();
-                printCurrentClients();
-            }, 30);
+        // CLIENT NAME
+        if (wt.registeredNickname !== undefined && wt.registeredNickname) {
+            document.getElementById('client-name').innerHTML = "Client Name: " + wt.nickname + "(registered)";
+        } else {
+            document.getElementById('client-name').innerHTML = "Client Name: " + wt.nickname;
+        }
 
-            document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
-                    <span style="color:rgb(179, 187, 197);font-size:14px;font-weight:200;"> | ${current_room.description}</span>`;
+        // only registered user can see the "leave" button
+        if (wt.registeredNickname === undefined || !wt.registeredNickname) {
+            document.getElementById('leave').style.display = 'none';
+        }
 
-            setTimeout(() => {
-                joinRoom();
-                printCurrentClients();
-            }, 40);
+        // if user have nickname, then show the client-area
+        if (nickname !== null && nickname !== undefined) {
+            document.getElementById('client-area').style.display = 'flex';
+        }
 
-            setTimeout(() => {
-                receiveMessage();
-                printCurrentClients();
-            }, 50);
+        // if user have registered, then dont show the login form
+        document.getElementById('login-container').style.display = 'none';
 
-            setTimeout(() => {
-                leaveRoom();
-                printCurrentClients();
-            }, 60);
+        window.send = function (msg) {
+            const formattedMsg = parseMessage(msg); // Parse the message before sending
+            current_room.send(formattedMsg); // Send the parsed message to the WebSocket or room
+        };
+        window.login = function (username, password) {
+            wt.login(username, password);
+        };
+        window.logout = function () {
+            wt.logout();
+        };
+    }
 
-            // CLIENT NAME
-            document.getElementById('client-name').innerHTML = "Client Name: " + nickname;
+    // login by account
+    loginForm.addEventListener('submit', (e) => {
+        e.preventDefault(); // prevent the default behavior
+        nicknameAccountValue = nicknameAccount.value.trim();
+        nicknamePasswordValue = nicknamePassword.value.trim();
+        wt.login(nicknameAccountValue, nicknamePasswordValue);
+    })
 
-            window.send = function (msg) {
-                const formattedMsg = parseMessage(msg); // Parse the message before sending
-                current_room.send(formattedMsg); // Send the parsed message to the WebSocket or room
-            };
-            window.login = function (username, password) {
-                wt.login(username, password);
-            };
-            window.logout = function () {
-                wt.logout();
-            };
+    // For logout
+
+
+    const sendButtonElement = document.getElementById("send-button");
+    sendButtonElement.addEventListener("click", (e) => {
+
+        e.preventDefault();
+        const message = msgInputElement.value.trim();
+        current_room.send(message);
+        msgInputElement.value = '';
+
+    })
+
+    // Function for rendering all rooms
+    function renderRooms() {
+        let current_room_name;
+        const roomListElement = document.getElementById("room-list");
+        if (current_room !== undefined) {
+            current_room_name = current_room.name;
+        } else {
+            current_room_name = "";
+        }
+
+        // Record which rooms the user is in
+        const roomNameUserIsIn = Object.keys(roomUserIsIn);
+        roomListElement.innerHTML = ''; // Clear room list
+
+        room_list.forEach(r => {
+            if (r.name === current_room_name) {
+                roomListElement.innerHTML += `
+            <div id="${r.name}" class="channel active">
+                <span style="color: white; font-size: 13px;">${r.name}</span>
+            </div>`;
+            } else {
+                roomListElement.innerHTML += `
+            <div id="${r.name}" class="channel">
+                <span style="color: white; font-size: 13px;">${r.name}</span>
+            </div>`;
+            }
+        });
+
+        roomNameUserIsIn.forEach(r => {
+            document.getElementById(r).classList.add('active');
+
+        });
+
+    }
+
+    // Handle changing room
+    document.getElementById("room-list").addEventListener('click', function (e) {
+        const clickedElement = e.target;
+        const idString = clickedElement.id;
+        if (idString !== "") {
+            // console.log("Switching to room: " + idString);
+
+            room_list.forEach(r => {
+                if (idString === r.name) {
+                    // wt.leave(current_room.name);
+
+                    current_room = wt.join(idString);
+                    roomUserIsIn = wt.joinedRooms;
+                    addChatBox();
+
+                    // Avoid duplicating listener additions on hide and leave
+                    console.log(current_room)
+                    if (current_room.listeners.length === 0) {
+                        setTimeout(() => joinRoom(), 50);
+                        setTimeout(() => leaveRoom(), 50);
+                        setTimeout(() => receiveMessage(), 60);
+                        setTimeout(() => printCurrentClients(current_room), 70);
+                    }
+
+                    renderRooms();
+                    // document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
+                    //     <span style="color:rgb(179, 187, 197);font-size:14px;font-weight:200;"> | ${current_room.description}</span>`;
+                }
+            });
+        }
+    });
+
+    // Installation of the listner for each rooms to receive messages
+    function receiveMessage() {
+        if (roomUserIsIn === "undefined" || roomUserIsIn === null) {
+            return;
+        }
+
+        current_room.onMessage((room, msg) => {
+            const current_room_name = room.name;
+
+            const messageContent = `
+                <div style="margin-left: 10px; margin-top: 10px">
+                    <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
+                    <span class="timestamp">${new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
+                    <div class="content">${parseMessage(msg.message)}</div>
+                </div>`;
+
+            document.getElementById("message-list-" + room.name).innerHTML += messageContent;
+        });
+
+    }
+
+    // Handle joining room => joinListener
+    function joinRoom() {
+        // for user self
+        let current_room_element = document.getElementById("message-list-" + current_room.name)
+        if (current_room_element !== null) {
+            current_room_element.innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
+        }
+
+        // Listen to all rooms that have been joined
+
+        current_room.onJoin((room, nickname) => {
+            document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
+            printCurrentClients(room)
+        });
+
+    }
+
+    // Handle leaving room => leaveListener
+    function leaveRoom() {
+        // Listen to users in all rooms leave current room
+        const roomNameUserIsIn = Object.keys(roomUserIsIn);
+        current_room.onLeave((room, nickname) => {
+            document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
+            printCurrentClients(room)
+            console.log(room)
+        });
+
+    }
+
+    // Function for printing current clients
+    // room_tmp design for callback function
+    function printCurrentClients(room_tmp) {
+        const clients = room_tmp.clients || [];
+        console.log(room_tmp);
+        let client_list_element = document.getElementById("client-list-" + room_tmp.name);
+        client_list_element.innerHTML = ""; // Clear the client list
+        client_list_element.innerHTML += `<div class="client-list-header">Client List</div>`; // 添加标题
+        clients.forEach(client => {
+            if (client.registered !== undefined) {
+                client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}(registered)</div>`;
+            } else {
+                client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}</div>`;
+            }
+        });
+
+
+    function initializeDragging() {
+        // Drag the chat box
+        console.log("initializeDragging")
+        // Use JavaScript's mousedown, mousemove, and mouseup events to implement drag effects
+        let currentChatBoxName = 'chat-box-' + current_room.name;
+        let currentChartBoxHeaderName = 'chat-box-header-' + current_room.name;
+        let chatBox = document.getElementById(currentChatBoxName);
+        let chatBoxHeader = document.getElementById(currentChartBoxHeaderName);
+
+        // offsetX and offsetY means the total offset from the start of dragging to the current position
+        // clientX: the horizontal coordinate (in pixels) of the mouse pointer relative to the left edge of the browser viewport.
+        // clientY: the vertical coordinate of the mouse pointer relative to the top edge of the browser viewport(in pixels).
+        let offsetX = 0, offsetY = 0, initialX = 0, initialY = 0, isDragging = false;
+
+        // Mouse press event on the chat-box-header to start dragging
+        chatBoxHeader.addEventListener('mousedown', function (e) {
+            isDragging = true;
+
+            // Calculates the relative position of the mouse inside the chatBox.
+            initialX = e.clientX - chatBox.offsetLeft; // Calculate initial mouse position relative to chatBox
+            initialY = e.clientY - chatBox.offsetTop;
+
+            document.addEventListener('mousemove', moveBox); // Add mousemove event to document to track dragging
+            document.addEventListener('mouseup', stopDragging); // Add mouseup event to stop dragging
+        });
+        // Update the position of the chat-box when moving the mouse
+        function moveBox(e) {
+            if (isDragging) {
+                offsetX = e.clientX - initialX; // Calculate new position
+                offsetY = e.clientY - initialY;
+                chatBox.style.left = `${offsetX}px`; // Update chatBox position
+                chatBox.style.top = `${offsetY}px`;
+            }
+        }
+
+        // Mouse up event to stop dragging
+        function stopDragging() {
+            isDragging = false;
+            document.removeEventListener('mousemove', moveBox); // Remove mousemove and mouseup event listeners
+            document.removeEventListener('mouseup', stopDragging);
+        }
+    }
+
+
+
+
+    // To Create a new Chat-box
+    function addChatBox() {
+        const chatMessagesElement = document.querySelector('.chat-messages');
+        let chatBoxName = current_room.name;
+
+        // Listen to users in all rooms leave current room
+        const roomNameUserIsIn = Object.keys(roomUserIsIn);
+
+
+
+        if (document.getElementById("chat-box-" + chatBoxName) !== null) {
+            return;
+        }
+
+        chatMessagesElement.innerHTML += `
+        <div id="chat-box-${chatBoxName}" class="chat-box">
+                        <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
+                            <span style="align-items:center">${chatBoxName}</span>
+                            <div class="chat-box-header-buttons">
+                                <i id="to-hide-${chatBoxName}" class="fa-solid fa-minus fa-xl" style="color: #8a8f98;padding-right:20px"></i>
+                                <i id="to-leave-${chatBoxName}" class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
+                            </div>
+                        </div>
+                        <div id="message-list-${chatBoxName}" class="message"></div>
+                        <div id="client-list-${chatBoxName}" class="client-list"></div>
+                        <!-- Message Input -->
+                        <div style="display: flex;">
+                            <div style="position:relative;width: 96%;margin-left: 2%">
+                                <div class="message-input">
+                                    <input id="msg-input-${chatBoxName}" type="text" placeholder="Say hello to everyone">
+                                </div>
+                            </div>
+                            <div
+                                style="width:7%;display:none;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
+                                <span id="send-button" style="color: white; font-size: 16px;">send</span>
+                            </div>
+                        </div>
+                    </div>
+    `}
+
+    // Select a room by clicking on chat-box and change it to be current room
+    document.querySelector('.chat-messages').addEventListener('click', function (event) {
+
+        // if there's no current room, then return
+        if (current_room === undefined || current_room === null) {
+            return;
+        }
+
+        // to get the clicked element
+        const clickedElement = event.target;
+        const elementId = clickedElement.id;
+
+        let idArray = elementId.split("-");
+        // to get current room name when clicking on chat-box
+        let current_room_name = idArray[idArray.length - 1];
+
+        // to get the current room element to set h-index
+        let currentRoomElement = document.getElementById(`chat-box-${current_room_name}`);
+        // currentRoomElement.classList.toggle('chat-box-h-index');
+
+        // to get the instantiated object of the room
+        current_room = wt.join(current_room_name);
+        initializeDragging();
+
+        // to set z-index
+        const chatBoxes = document.querySelectorAll('.chat-box');
+
+        chatBoxes.forEach(chatBox => {
+            chatBox.addEventListener('mousedown', function () {
+                bringToFront(chatBox);
+            });
+        });
+
+        function bringToFront(selectedChatBox) {
+            let maxZ = 0;
+            chatBoxes.forEach(chatBox => {
+                const zIndex = parseInt(window.getComputedStyle(chatBox).zIndex) || 0;
+                if (zIndex > maxZ) {
+                    maxZ = zIndex;
+                }
+            });
+            selectedChatBox.style.zIndex = maxZ + 1;
         }
 
         // Handle sending messages on Enter key press
-        const msgInputElement = document.getElementById("msg-input");
+        const msgInputElement = document.getElementById("msg-input-" + current_room_name);
         msgInputElement.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -153,197 +497,106 @@
                 msgInputElement.value = '';
             }
         });
+    });
 
-        const sendButtonElement = document.getElementById("send-button");
-        sendButtonElement.addEventListener("click", (e) => {
+    // Event listener for minimizing chat boxes using the minimize button
+    document.querySelector('.chat-messages').addEventListener('click', function (event) {
+        const clickedElement = event.target;
+        const elementId = clickedElement.id;
+        let idArray = elementId.split("-");
+        let current_room_name = idArray[idArray.length - 1];
 
+        if (elementId.includes('to-hide')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            chatBox.classList.add('chat-box-hidden');
+        }
+    });
+
+    // show chat-box again when click on siderbar
+    document.getElementById("room-list").addEventListener('click', function (e) {
+        const clickedElement = e.target;
+        const idString = clickedElement.id;
+        console.log(idString)
+        if (idString !== "") {
+            const chatBox = document.getElementById(`chat-box-${idString}`);
+            chatBox.classList.remove('chat-box-hidden');
+        }
+    });
+      
+    document.getElementById("msg-input").addEventListener("keydown", (e) => {
+
+        // Bold Ctrl + B
+        if (e.ctrlKey && e.key === "b") {
             e.preventDefault();
-            const message = msgInputElement.value.trim();
-            current_room.send(message);
-            msgInputElement.value = '';
-
-        })
-
-        // Function for rendering all rooms
-        function renderRooms() {
-            const roomListElement = document.getElementById("room-list");
-            let current_room_name = current_room.name;
-
-            roomListElement.innerHTML = ''; // Clear room list
-
-            room_list.forEach(r => {
-                if (r.name === current_room_name) {
-                    roomListElement.innerHTML += `
-                <div id="${r.name}" class="channel active" style="pointer-events: none;">
-                    <span style="color: white; font-size: 13px;">${r.name}</span>
-                </div>`;
-                } else {
-                    roomListElement.innerHTML += `
-                <div id="${r.name}" class="channel">
-                    <span style="color: white; font-size: 13px;">${r.name}</span>
-                </div>`;
-                }
-            });
+            wrapSelection("**");
         }
 
-        // Handle changing room
-        document.getElementById("room-list").addEventListener('click', function (e) {
-            const clickedElement = e.target;
-            const idString = clickedElement.id;
-            if (idString !== "") {
-                room_list.forEach(r => {
-                    if (idString === r.name) {
-                        current_room.listeners = [];
-                        current_room.joinListeners = [];
-                        current_room.leaveListeners = [];
-
-                        // wt.leave(current_room.name);
-
-                        current_room = wt.join(idString);
-
-                        setTimeout(() => joinRoom(), 50);
-                        setTimeout(() => receiveMessage(), 60);
-                        setTimeout(() => printCurrentClients(), 70);
-
-                        document.getElementById("message-list").innerHTML = ""; // Clear messages
-
-                        renderRooms();
-                        document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
-                    <span style="color:rgb(179, 187, 197);font-size:14px;font-weight:200;"> | ${current_room.description}</span>`;
-                    }
-                });
-            }
-        });
-
-        // Handle receiving messages
-        function receiveMessage() {
-            current_room.onMessage((room, msg) => {
-                const current_room_name = current_room.name;
-                const formattedMessage = parseMessage(msg.message);
-
-                const messageContent = `
-                    <div style="margin-left: 10px; margin-top: 10px">
-                        <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
-                        <span class="timestamp">${new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
-                        <div class="content">${formattedMessage}</div>
-                    </div>`;
-
-                if (msg.room === current_room_name) {
-                    document.getElementById("message-list").innerHTML += messageContent;
-                }
-            });
+        // Italic Ctrl + I
+        if (e.ctrlKey && e.key === "i") {
+            e.preventDefault();
+            wrapSelection("*"); 
         }
 
-        // Handle joining room
-        function joinRoom() {
-            document.getElementById("message-list").innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
-            current_room.onJoin((room, nickname) => {
-                if (document.querySelector('#room-list .channel.active').id === room.name) {
-                    document.getElementById("message-list").innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
-                }
-                printCurrentClients()
-            });
+        // Underline Ctrl + U
+        if (e.ctrlKey && e.key === "u") {
+            e.preventDefault();
+            wrapSelection("__"); 
         }
 
-        // Handle leaving room
-        function leaveRoom() {
-            current_room.onLeave((room, nickname) => {
-                console.log(room, nickname);
-                if (document.querySelector('#room-list .channel.active').id === room.name) {
-                    document.getElementById("message-list").innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
-                }
-
-                printCurrentClients()
-            });
+        // Strikethrough Ctrl + S
+        if (e.ctrlKey && e.key === "s") {
+            e.preventDefault();
+            wrapSelection("~~"); 
         }
 
-        // Function for printing current clients
-        function printCurrentClients() {
-            const clients = current_room.clients || [];
-            console.log(current_room)
-            let client_list_element = document.getElementById("client-list");
-            client_list_element.innerHTML = ""; // Clear the client list
-            client_list_element.innerHTML += `<div style="display:flex;justify-content:center;font-size:17px;margin-bottom:10px;" >client list</div>`;
-            clients.forEach(client => {
-                client_list_element.innerHTML += `<div class="client-list-item">${client.nickname}</div>`;
-            });
+        // Monospace ``
+        if (e.ctrlKey && e.key === "`") {
+            e.preventDefault();
+            wrapSelection("`");
         }
+    });
 
-        // Toggle client list visibility
-        document.getElementById('show-clients').addEventListener('click', function (e) {
-            this.classList.toggle('active');
-            let client_list_side = document.getElementById("client-list");
-            client_list_side.style.display = this.classList.contains('active') ? "block" : "none";
-            this.src = this.classList.contains('active') ? '/static/icon/people-active.png' : '/static/icon/people.png';
-        });
+// Display message with correct format
+// Use regex to parse characters accordingly
+function parseMessage(message) {
+    return message
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')       
+        .replace(/__(.*?)__/g, '<u>$1</u>')       
+        .replace(/~~(.*?)~~/g, '<s>$1</s>')       
+        .replace(/`(.*?)`/g, '<code>$1</code>');  
+}
 
-        // Handle text formats using Markdown syntax
-        document.getElementById("msg-input").addEventListener("keydown", (e) => {
-            
-            // Bold Ctrl + B
-            if (e.ctrlKey && e.key === "b") {
-                e.preventDefault();
-                wrapSelection("**");
-            }
+    // Format selected text with hotkeys
+    function wrapSelection(tag) {
+        const input = document.getElementById("msg-input");
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const text = input.value;
 
-            // Italic Ctrl + I
-            if (e.ctrlKey && e.key === "i") {
-                e.preventDefault();
-                wrapSelection("*"); // Italic
-            }
+        // Apply format only with the text selected
+        if (start !== end) {
+            input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
+            input.setSelectionRange(end + tag.length, end + tag.length);
+        } 
+        input.focus();
+    }
 
-            // Underline Ctrl + U
-            if (e.ctrlKey && e.key === "u") {
-                e.preventDefault();
-                wrapSelection("__"); 
-            }
+    // Event listener for leave room by using the close button and delete the chat-box
+    document.querySelector('.chat-messages').addEventListener('click', function (event) {
 
-            // Strikethrough Ctrl + S
-            if (e.ctrlKey && e.key === "s") {
-                e.preventDefault();
-                wrapSelection("~~"); 
-            }
+        const clickedElement = event.target;
+        const elementId = clickedElement.id;
+        let idArray = elementId.split("-");
+        let current_room_name = idArray[idArray.length - 1];
 
-            // Monospace ``
-            if (e.ctrlKey && e.key === "`") {
-                e.preventDefault();
-                wrapSelection("`");
-            }
-        });
-
-        // Display message with correct format
-        function parseMessage(message) {
-            return message
-                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
-                .replace(/\*(.*?)\*/g, '<i>$1</i>')       
-                .replace(/__(.*?)__/g, '<u>$1</u>')       
-                .replace(/~~(.*?)~~/g, '<s>$1</s>')       
-                .replace(/`(.*?)`/g, '<code>$1</code>');  
+        if (elementId.includes('to-leave')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            wt.leave(current_room_name);
+            document.getElementById(current_room_name).classList.remove('active');
+            chatBox.remove();
         }
-
-        // Format selected text with hotkeys
-        function wrapSelection(tag) {
-            const input = document.getElementById("msg-input");
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            const text = input.value;
-
-            // Apply format only with the text selected
-            if (start !== end) {
-                input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
-                input.setSelectionRange(end + tag.length, end + tag.length);
-            } 
-            input.focus();
-        }
-
-        // back to the regist page
-        document.getElementById('leave').addEventListener('click', function (e) {
-            localStorage.removeItem('nickName')
-            window.location.href = "./login.html";
-        })
-        /**
-            I'm trying to write a drop and reconnect, but there doesn't seem to be a corresponding method.
-        */
+    });
 
 
     </script>
