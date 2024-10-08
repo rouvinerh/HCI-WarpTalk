@@ -157,6 +157,17 @@
         wt.connect(connected, nickname);
     })
 
+    // Display message with correct format
+    // Use regex to parse characters accordingly
+    function parseMessage(message) {
+        return message
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
+            .replace(/\*(.*?)\*/g, '<i>$1</i>')       
+            .replace(/__(.*?)__/g, '<u>$1</u>')       
+            .replace(/~~(.*?)~~/g, '<s>$1</s>')       
+            .replace(/`(.*?)`/g, '<code>$1</code>');  
+    }
+
     // This function is called when the connection to the server is established.
     async function connected() {
         console.log("Connection established.");
@@ -211,8 +222,7 @@
     })
 
     // For logout
-
-
+    
     const sendButtonElement = document.getElementById("send-button");
     sendButtonElement.addEventListener("click", (e) => {
 
@@ -257,6 +267,46 @@
         });
 
     }
+
+        // To Create a new Chat-box
+        function addChatBox() {
+        const chatMessagesElement = document.querySelector('.chat-messages');
+        let chatBoxName = current_room.name;
+
+        // Listen to users in all rooms leave current room
+        const roomNameUserIsIn = Object.keys(roomUserIsIn);
+
+
+
+        if (document.getElementById("chat-box-" + chatBoxName) !== null) {
+            return;
+        }
+
+        chatMessagesElement.innerHTML += `
+        <div id="chat-box-${chatBoxName}" class="chat-box">
+                        <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
+                            <span style="align-items:center">${chatBoxName}</span>
+                            <div class="chat-box-header-buttons">
+                                <i id="to-hide-${chatBoxName}" class="fa-solid fa-minus fa-xl" style="color: #8a8f98;padding-right:20px"></i>
+                                <i id="to-leave-${chatBoxName}" class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
+                            </div>
+                        </div>
+                        <div id="message-list-${chatBoxName}" class="message"></div>
+                        <div id="client-list-${chatBoxName}" class="client-list"></div>
+                        <!-- Message Input -->
+                        <div style="display: flex;">
+                            <div style="position:relative;width: 96%;margin-left: 2%">
+                                <div class="message-input">
+                                    <input id="msg-input-${chatBoxName}" type="text" placeholder="Say hello to everyone">
+                                </div>
+                            </div>
+                            <div
+                                style="width:7%;display:none;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
+                                <span id="send-button" style="color: white; font-size: 16px;">send</span>
+                            </div>
+                        </div>
+                    </div>
+    `}
 
     // Handle changing room
     document.getElementById("room-list").addEventListener('click', function (e) {
@@ -400,49 +450,6 @@
         }
     }
 
-
-
-
-    // To Create a new Chat-box
-    function addChatBox() {
-        const chatMessagesElement = document.querySelector('.chat-messages');
-        let chatBoxName = current_room.name;
-
-        // Listen to users in all rooms leave current room
-        const roomNameUserIsIn = Object.keys(roomUserIsIn);
-
-
-
-        if (document.getElementById("chat-box-" + chatBoxName) !== null) {
-            return;
-        }
-
-        chatMessagesElement.innerHTML += `
-        <div id="chat-box-${chatBoxName}" class="chat-box">
-                        <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
-                            <span style="align-items:center">${chatBoxName}</span>
-                            <div class="chat-box-header-buttons">
-                                <i id="to-hide-${chatBoxName}" class="fa-solid fa-minus fa-xl" style="color: #8a8f98;padding-right:20px"></i>
-                                <i id="to-leave-${chatBoxName}" class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
-                            </div>
-                        </div>
-                        <div id="message-list-${chatBoxName}" class="message"></div>
-                        <div id="client-list-${chatBoxName}" class="client-list"></div>
-                        <!-- Message Input -->
-                        <div style="display: flex;">
-                            <div style="position:relative;width: 96%;margin-left: 2%">
-                                <div class="message-input">
-                                    <input id="msg-input-${chatBoxName}" type="text" placeholder="Say hello to everyone">
-                                </div>
-                            </div>
-                            <div
-                                style="width:7%;display:none;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
-                                <span id="send-button" style="color: white; font-size: 16px;">send</span>
-                            </div>
-                        </div>
-                    </div>
-    `}
-
     // Select a room by clicking on chat-box and change it to be current room
     document.querySelector('.chat-messages').addEventListener('click', function (event) {
 
@@ -487,6 +494,21 @@
             selectedChatBox.style.zIndex = maxZ + 1;
         }
 
+            // Format selected text with hotkeys
+        function wrapSelection(tag) {
+            const input = document.getElementById("msg-input-" + current_room_name);
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const text = input.value;
+
+            // Apply format only with the text selected
+            if (start !== end) {
+                input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
+                input.setSelectionRange(end + tag.length, end + tag.length);
+            } 
+            input.focus();
+        }
+
         // Handle sending messages on Enter key press
         const msgInputElement = document.getElementById("msg-input-" + current_room_name);
         msgInputElement.addEventListener("keydown", (e) => {
@@ -497,34 +519,8 @@
                 msgInputElement.value = '';
             }
         });
-    });
 
-    // Event listener for minimizing chat boxes using the minimize button
-    document.querySelector('.chat-messages').addEventListener('click', function (event) {
-        const clickedElement = event.target;
-        const elementId = clickedElement.id;
-        let idArray = elementId.split("-");
-        let current_room_name = idArray[idArray.length - 1];
-
-        if (elementId.includes('to-hide')) {
-            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
-            chatBox.classList.add('chat-box-hidden');
-        }
-    });
-
-    // show chat-box again when click on siderbar
-    document.getElementById("room-list").addEventListener('click', function (e) {
-        const clickedElement = e.target;
-        const idString = clickedElement.id;
-        console.log(idString)
-        if (idString !== "") {
-            const chatBox = document.getElementById(`chat-box-${idString}`);
-            chatBox.classList.remove('chat-box-hidden');
-        }
-    });
-      
-    document.getElementById("msg-input").addEventListener("keydown", (e) => {
-
+        document.getElementById("msg-input-" + current_room_name).addEventListener("keydown", (e) => {
         // Bold Ctrl + B
         if (e.ctrlKey && e.key === "b") {
             e.preventDefault();
@@ -554,33 +550,32 @@
             e.preventDefault();
             wrapSelection("`");
         }
+        });
     });
 
-// Display message with correct format
-// Use regex to parse characters accordingly
-function parseMessage(message) {
-    return message
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
-        .replace(/\*(.*?)\*/g, '<i>$1</i>')       
-        .replace(/__(.*?)__/g, '<u>$1</u>')       
-        .replace(/~~(.*?)~~/g, '<s>$1</s>')       
-        .replace(/`(.*?)`/g, '<code>$1</code>');  
-}
+    // Event listener for minimizing chat boxes using the minimize button
+    document.querySelector('.chat-messages').addEventListener('click', function (event) {
+        const clickedElement = event.target;
+        const elementId = clickedElement.id;
+        let idArray = elementId.split("-");
+        let current_room_name = idArray[idArray.length - 1];
 
-    // Format selected text with hotkeys
-    function wrapSelection(tag) {
-        const input = document.getElementById("msg-input");
-        const start = input.selectionStart;
-        const end = input.selectionEnd;
-        const text = input.value;
+        if (elementId.includes('to-hide')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            chatBox.classList.add('chat-box-hidden');
+        }
+    });
 
-        // Apply format only with the text selected
-        if (start !== end) {
-            input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
-            input.setSelectionRange(end + tag.length, end + tag.length);
-        } 
-        input.focus();
-    }
+    // show chat-box again when click on siderbar
+    document.getElementById("room-list").addEventListener('click', function (e) {
+        const clickedElement = e.target;
+        const idString = clickedElement.id;
+        console.log(idString)
+        if (idString !== "") {
+            const chatBox = document.getElementById(`chat-box-${idString}`);
+            chatBox.classList.remove('chat-box-hidden');
+        }
+    });
 
     // Event listener for leave room by using the close button and delete the chat-box
     document.querySelector('.chat-messages').addEventListener('click', function (event) {
@@ -597,8 +592,7 @@ function parseMessage(message) {
             chatBox.remove();
         }
     });
-
-
+}
     </script>
 
     </html>
