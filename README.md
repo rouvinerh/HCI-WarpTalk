@@ -12,7 +12,7 @@ Messages
 
 Nicknames  
 - [x] Be able to use an anonymous nickname.  
-- [ ] Be able to login with a registered nickname.  
+- [x] Be able to login with a registered nickname.  
 - [ ] Be able to logout again.  
 
 Tips: The above only applies if there is currently only one chat room.

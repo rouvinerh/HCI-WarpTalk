@@ -167,7 +167,7 @@ width: 100%;
     right: 0;
 }
 .channel-list {
-    width: 180px;
+    width: 220px;
     background-color: #2F3136;
     position:relative;
     
@@ -389,3 +389,44 @@ width: 100%;
 .chat-box-hidden { 
     display: none;
 }
+
+.login-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0.5rem;
+            max-width: 400px;
+            width: 100%;
+            
+        }
+
+.login-container h1 {
+    display: flex;
+    justify-content: center;
+    color:#1a1f27  
+}
+
+.login-container input {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    margin-bottom: 2vh;
+    font-size: 15px;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.login-container button {
+    width: 100%;
+    background-color: black;
+    color: white;
+    padding: 15px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.login-container button:hover {
+    background-color: #333;
+}
+
