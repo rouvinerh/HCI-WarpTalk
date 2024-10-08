@@ -391,13 +391,12 @@ width: 100%;
 }
 
 .login-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 0.5rem;
-            max-width: 400px;
-            width: 100%;
-            
-        }
+    background-color: white;
+    padding: 20px;
+    border-radius: 0.5rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
 
 .login-container h1 {
     display: flex;

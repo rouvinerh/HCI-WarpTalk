@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Chat Interface</title>
-    <!-- <link rel="stylesheet" type="text/css" href="./warp_chat_style.css"> -->
-    <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/wet-eagle-13/warp_chat_style.css">
+    <link rel="stylesheet" type="text/css" href="./warp_chat_style.css"> 
+    <!-- <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/wet-eagle-13/warp_chat_style.css"> -->
 </head>
 
 <body>
@@ -218,11 +218,17 @@
         e.preventDefault(); // prevent the default behavior
         nicknameAccountValue = nicknameAccount.value.trim();
         nicknamePasswordValue = nicknamePassword.value.trim();
-        wt.login(nicknameAccountValue, nicknamePasswordValue);
+        wt.login(nicknameAccountValue, nicknamePasswordValue);    
     })
 
     // For logout
-    
+    document.getElementById('leave').addEventListener('click', function (e) {
+        e.preventDefault();
+        document.getElementById('client-area').style.display = 'none';
+        document.getElementById('login-container').style.display = 'block';
+        wt.logout();
+    });
+
     const sendButtonElement = document.getElementById("send-button");
     sendButtonElement.addEventListener("click", (e) => {
 
