@@ -117,7 +117,8 @@
     let checkedInput = "";
     let checkedInputValue = "all";
 
-    let message_list = {
+
+    let message_list_initial = {
         "General": [],
         "Random": [],
         "Programming": [],
@@ -125,6 +126,13 @@
         "News": [],
         "Lectures": [],
     };
+
+    let stored_message_list = localStorage.getItem("message_list");
+    let message_list = stored_message_list ? JSON.parse(stored_message_list) : message_list_initial;
+
+
+
+
 
     console.log("Connecting to the WarpTalk server ...");
 
@@ -237,6 +245,8 @@
     // For logout
     document.getElementById('leave').addEventListener('click', function (e) {
         e.preventDefault();
+        localStorage.removeItem('message_list');
+        console.log("logout");
         document.getElementById('client-area').style.display = 'none';
         document.getElementById('login-container').style.display = 'block';
         wt.logout();
@@ -402,6 +412,7 @@
             const current_room_name = room.name;
 
             if (!message_list[current_room_name]) {
+                console.log("create new room")
                 message_list[current_room_name] = [];
             }
             if (msg.sender !== nickname) {
@@ -432,12 +443,12 @@
 
     function filterMessages(chatBoxName, filterType) {
         const messageListElement = document.getElementById(`message-list-${chatBoxName}`);
-        // const messages = message_list[chatBoxName];
+        const messages = message_list[chatBoxName] || [];
 
         // 清空当前的消息列表
-        const messagesObj = JSON.parse(localStorage.getItem('message_list')) || {};
-        const messages = messagesObj[chatBoxName] || [];
-        console.log(messages);
+        // const messagesObj = JSON.parse(localStorage.getItem('message_list')) || {};
+        // const messages = messagesObj[chatBoxName] || [];
+        // console.log(messages);
 
         messageListElement.innerHTML = '';
 
