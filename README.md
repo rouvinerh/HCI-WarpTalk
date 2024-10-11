@@ -18,3 +18,5 @@ Nicknames
 Maybes
 - [x] Implement support for storing the history of a chat across page reloads.  
 - [x] Ability to filter out messages from non-registered users.
+- [x] Implement search in message history.
+
