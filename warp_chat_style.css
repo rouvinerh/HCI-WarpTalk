@@ -350,9 +350,37 @@ width: 100%;
     grid-template-areas:
     "header header"
     "main client"
-    "input input";
+    "input checkbox";
     gap: 13px;
 }
+
+.checkbox {
+    grid-area: checkbox;
+    display: flex;
+    flex-direction: column; /* 让 label 和内容垂直排列 */
+    justify-content: center;
+    align-items: center;
+}
+
+.checkbox-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;  /* 确保 input 和 label 垂直居中对齐 */
+    margin-right: 10px;   /* 可选：为每个选项之间添加一些间距 */
+}
+
+.checkbox-item label {
+    font-size: 10px;
+    margin-left: 5px;    /* 确保 label 和 input 之间有间距 */
+}
+
+
 
 .chat-box-header {
     grid-area: header;

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discord Chat Interface</title>
-    <link rel="stylesheet" type="text/css" href="./warp_chat_style.css"> 
+    <link rel="stylesheet" type="text/css" href="./warp_chat_style.css">
     <!-- <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/wet-eagle-13/warp_chat_style.css"> -->
 </head>
 
@@ -114,12 +114,23 @@
 
     // The rooms the user is in now
     let roomUserIsIn = [];
+    let checkedInput = "";
+    let checkedInputValue = "all";
+
+    let message_list = {
+        "General": [],
+        "Random": [],
+        "Programming": [],
+        "Help": [],
+        "News": [],
+        "Lectures": [],
+    };
 
     console.log("Connecting to the WarpTalk server ...");
 
     // let nickname = localStorage.getItem('nickName'); // Retrieve the nickname from localStorage
     let nickname;
-
+    wt.connect(connected, nickname);
     if (localStorage.getItem('login') !== null) {
         nickname = localStorage.getItem('login');
     }
@@ -150,6 +161,7 @@
         }
     });
 
+    // modify
     const nickname_e = document.getElementById("using-nickname");
     nickname_e.addEventListener("click", function (e) {
         let nickname = prompt("What's your (unregistered) nickname?");
@@ -161,15 +173,16 @@
     // Use regex to parse characters accordingly
     function parseMessage(message) {
         return message
-            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')   
-            .replace(/\*(.*?)\*/g, '<i>$1</i>')       
-            .replace(/__(.*?)__/g, '<u>$1</u>')       
-            .replace(/~~(.*?)~~/g, '<s>$1</s>')       
-            .replace(/`(.*?)`/g, '<code>$1</code>');  
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+            .replace(/\*(.*?)\*/g, '<i>$1</i>')
+            .replace(/__(.*?)__/g, '<u>$1</u>')
+            .replace(/~~(.*?)~~/g, '<s>$1</s>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
     }
 
     // This function is called when the connection to the server is established.
     async function connected() {
+        console.log(wt)
         console.log("Connection established.");
         nickname = wt.nickname;
         room_list = wt.availableRooms;
@@ -218,7 +231,7 @@
         e.preventDefault(); // prevent the default behavior
         nicknameAccountValue = nicknameAccount.value.trim();
         nicknamePasswordValue = nicknamePassword.value.trim();
-        wt.login(nicknameAccountValue, nicknamePasswordValue);    
+        wt.login(nicknameAccountValue, nicknamePasswordValue);
     })
 
     // For logout
@@ -274,13 +287,15 @@
 
     }
 
-        // To Create a new Chat-box
-        function addChatBox() {
+    // To Create a new Chat-box
+    function addChatBox() {
         const chatMessagesElement = document.querySelector('.chat-messages');
         let chatBoxName = current_room.name;
 
         // Listen to users in all rooms leave current room
         const roomNameUserIsIn = Object.keys(roomUserIsIn);
+
+
 
 
 
@@ -290,13 +305,36 @@
 
         chatMessagesElement.innerHTML += `
         <div id="chat-box-${chatBoxName}" class="chat-box">
+            
                         <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
                             <span style="align-items:center">${chatBoxName}</span>
+
                             <div class="chat-box-header-buttons">
                                 <i id="to-hide-${chatBoxName}" class="fa-solid fa-minus fa-xl" style="color: #8a8f98;padding-right:20px"></i>
                                 <i id="to-leave-${chatBoxName}" class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
                             </div>
                         </div>
+
+                        <div id="checkbox-${chatBoxName}" class="checkbox">
+                            <label style="margin-bottom:10px">Filter message</label>
+                            <div class="checkbox-content">
+                                <div class="checkbox-item">
+                                    <input type="radio" id="checkbox-all-${chatBoxName}" name="filter-message-${chatBoxName}" value="all" checked />
+                                    <label for="checkbox-all-${chatBoxName}">All</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" id="checkbox-registered-${chatBoxName}" name="filter-message-${chatBoxName}" value="registered" />
+                                    <label for="checkbox-registered-${chatBoxName}">Registered</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="radio" id="checkbox-unregistered-${chatBoxName}" name="filter-message-${chatBoxName}" value="unregistered" />
+                                    <label for="checkbox-unregistered-${chatBoxName}">Unregistered</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
                         <div id="message-list-${chatBoxName}" class="message"></div>
                         <div id="client-list-${chatBoxName}" class="client-list"></div>
                         <!-- Message Input -->
@@ -312,7 +350,13 @@
                             </div>
                         </div>
                     </div>
-    `}
+    `
+
+
+        filterMessages(chatBoxName, checkedInputValue);
+        //initial button    
+        initializeRadioButtons(chatBoxName);
+    }
 
     // Handle changing room
     document.getElementById("room-list").addEventListener('click', function (e) {
@@ -346,6 +390,8 @@
         }
     });
 
+
+
     // Installation of the listner for each rooms to receive messages
     function receiveMessage() {
         if (roomUserIsIn === "undefined" || roomUserIsIn === null) {
@@ -355,17 +401,83 @@
         current_room.onMessage((room, msg) => {
             const current_room_name = room.name;
 
-            const messageContent = `
-                <div style="margin-left: 10px; margin-top: 10px">
-                    <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
-                    <span class="timestamp">${new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
-                    <div class="content">${parseMessage(msg.message)}</div>
-                </div>`;
+            if (!message_list[current_room_name]) {
+                message_list[current_room_name] = [];
+            }
+            if (msg.sender !== nickname) {
+                message_list[current_room_name].push({ sender: msg.sender, status: msg.registered, message: msg.message, timestamp: new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true }) });
+                localStorage.setItem('message_list', JSON.stringify(message_list));
+            }
+            console.log("!")
+            // 重新渲染消息列表
+            filterMessages(current_room_name, checkedInputValue);
+        });
+    }
 
-            document.getElementById("message-list-" + room.name).innerHTML += messageContent;
+
+    function initializeRadioButtons(chatBoxName) {
+        var radios = document.querySelectorAll('input[name="filter-message-' + current_room.name + '"]');
+        radios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                checkedInput = document.querySelector('input[name="filter-message-' + current_room.name + '"]:checked');
+                checkedInputValue = checkedInput.value;
+                console.log(checkedInputValue);
+
+                // 调用 filterMessages 来重新渲染消息列表
+                filterMessages(chatBoxName, checkedInputValue);
+            });
+        });
+    }
+
+
+    function filterMessages(chatBoxName, filterType) {
+        const messageListElement = document.getElementById(`message-list-${chatBoxName}`);
+        // const messages = message_list[chatBoxName];
+
+        // 清空当前的消息列表
+        const messagesObj = JSON.parse(localStorage.getItem('message_list')) || {};
+        const messages = messagesObj[chatBoxName] || [];
+        console.log(messages);
+
+        messageListElement.innerHTML = '';
+
+        // 根据过滤类型筛选消息
+        const filteredMessages = messages.filter((msg) => {
+            if (filterType === 'all') {
+                return true;
+            } else if (filterType === 'registered') {
+                return msg.status === true;
+            } else if (filterType === 'unregistered') {
+                return msg.status === false;
+            }
         });
 
+        console.log(filteredMessages);
+
+        // 重新渲染过滤后的消息
+        filteredMessages.forEach((msg) => {
+            let messageContent;
+            if (msg.status) {
+                messageContent = `<div style="margin-left: 10px; margin-top: 10px">
+                <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}(registered)</span>
+                <span class="timestamp">${msg.timestamp}</span>
+                <div class="content">${parseMessage(msg.message)}</div>
+            </div>`;
+            } else {
+                messageContent = `<div style="margin-left: 10px; margin-top: 10px">
+                <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
+                <span class="timestamp">${msg.timestamp}</span>
+                <div class="content">${parseMessage(msg.message)}</div>
+            </div>`;
+            }
+            // 累加消息内容
+            messageListElement.innerHTML += messageContent;
+        });
     }
+
+
+
+
 
     // Handle joining room => joinListener
     function joinRoom() {
@@ -374,14 +486,11 @@
         if (current_room_element !== null) {
             current_room_element.innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
         }
-
         // Listen to all rooms that have been joined
-
         current_room.onJoin((room, nickname) => {
             document.getElementById("message-list-" + room.name).innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} joined ${room.name}</span></div>`;
             printCurrentClients(room)
         });
-
     }
 
     // Handle leaving room => leaveListener
@@ -413,192 +522,196 @@
         });
 
 
-    function initializeDragging() {
-        // Drag the chat box
-        console.log("initializeDragging")
-        // Use JavaScript's mousedown, mousemove, and mouseup events to implement drag effects
-        let currentChatBoxName = 'chat-box-' + current_room.name;
-        let currentChartBoxHeaderName = 'chat-box-header-' + current_room.name;
-        let chatBox = document.getElementById(currentChatBoxName);
-        let chatBoxHeader = document.getElementById(currentChartBoxHeaderName);
+        function initializeDragging() {
+            console.log("initializeDragging");
+            // Use JavaScript's mousedown, mousemove, and mouseup events to implement drag effects
+            let currentChatBoxName = 'chat-box-' + current_room.name;
+            let currentChartBoxHeaderName = 'chat-box-header-' + current_room.name;
+            let chatBox = document.getElementById(currentChatBoxName);
+            let chatBoxHeader = document.getElementById(currentChartBoxHeaderName);
 
-        // offsetX and offsetY means the total offset from the start of dragging to the current position
-        // clientX: the horizontal coordinate (in pixels) of the mouse pointer relative to the left edge of the browser viewport.
-        // clientY: the vertical coordinate of the mouse pointer relative to the top edge of the browser viewport(in pixels).
-        let offsetX = 0, offsetY = 0, initialX = 0, initialY = 0, isDragging = false;
+            // offsetX and offsetY means the total offset from the start of dragging to the current position
+            // clientX: the horizontal coordinate (in pixels) of the mouse pointer relative to the left edge of the browser viewport.
+            // clientY: the vertical coordinate of the mouse pointer relative to the top edge of the browser viewport(in pixels).
+            let offsetX = 0, offsetY = 0, initialX = 0, initialY = 0, isDragging = false;
 
-        // Mouse press event on the chat-box-header to start dragging
-        chatBoxHeader.addEventListener('mousedown', function (e) {
-            isDragging = true;
+            // Mouse press event on the chat-box-header to start dragging
+            chatBoxHeader.addEventListener('mousedown', function (e) {
+                isDragging = true;
 
-            // Calculates the relative position of the mouse inside the chatBox.
-            initialX = e.clientX - chatBox.offsetLeft; // Calculate initial mouse position relative to chatBox
-            initialY = e.clientY - chatBox.offsetTop;
+                // Calculates the relative position of the mouse inside the chatBox.
+                initialX = e.clientX - chatBox.offsetLeft; // Calculate initial mouse position relative to chatBox
+                initialY = e.clientY - chatBox.offsetTop;
 
-            document.addEventListener('mousemove', moveBox); // Add mousemove event to document to track dragging
-            document.addEventListener('mouseup', stopDragging); // Add mouseup event to stop dragging
-        });
-        // Update the position of the chat-box when moving the mouse
-        function moveBox(e) {
-            if (isDragging) {
-                offsetX = e.clientX - initialX; // Calculate new position
-                offsetY = e.clientY - initialY;
-                chatBox.style.left = `${offsetX}px`; // Update chatBox position
-                chatBox.style.top = `${offsetY}px`;
+                document.addEventListener('mousemove', moveBox); // Add mousemove event to document to track dragging
+                document.addEventListener('mouseup', stopDragging); // Add mouseup event to stop dragging
+            });
+            // Update the position of the chat-box when moving the mouse
+            function moveBox(e) {
+                if (isDragging) {
+                    offsetX = e.clientX - initialX; // Calculate new position
+                    offsetY = e.clientY - initialY;
+                    chatBox.style.left = `${offsetX}px`; // Update chatBox position
+                    chatBox.style.top = `${offsetY}px`;
+                }
+            }
+
+            // Mouse up event to stop dragging
+            function stopDragging() {
+                isDragging = false;
+                document.removeEventListener('mousemove', moveBox); // Remove mousemove and mouseup event listeners
+                document.removeEventListener('mouseup', stopDragging);
             }
         }
 
-        // Mouse up event to stop dragging
-        function stopDragging() {
-            isDragging = false;
-            document.removeEventListener('mousemove', moveBox); // Remove mousemove and mouseup event listeners
-            document.removeEventListener('mouseup', stopDragging);
-        }
-    }
+        // Select a room by clicking on chat-box and change it to be current room
+        document.querySelector('.chat-messages').addEventListener('click', function (event) {
 
-    // Select a room by clicking on chat-box and change it to be current room
-    document.querySelector('.chat-messages').addEventListener('click', function (event) {
+            // if there's no current room, then return
+            if (current_room === undefined || current_room === null) {
+                return;
+            }
 
-        // if there's no current room, then return
-        if (current_room === undefined || current_room === null) {
-            return;
-        }
+            // to get the clicked element
+            const clickedElement = event.target;
+            const elementId = clickedElement.id;
 
-        // to get the clicked element
-        const clickedElement = event.target;
-        const elementId = clickedElement.id;
+            let idArray = elementId.split("-");
+            // to get current room name when clicking on chat-box
+            let current_room_name = idArray[idArray.length - 1];
 
-        let idArray = elementId.split("-");
-        // to get current room name when clicking on chat-box
-        let current_room_name = idArray[idArray.length - 1];
+            // to get the current room element to set h-index
+            let currentRoomElement = document.getElementById(`chat-box-${current_room_name}`);
+            // currentRoomElement.classList.toggle('chat-box-h-index');
 
-        // to get the current room element to set h-index
-        let currentRoomElement = document.getElementById(`chat-box-${current_room_name}`);
-        // currentRoomElement.classList.toggle('chat-box-h-index');
+            // to get the instantiated object of the room
+            current_room = wt.join(current_room_name);
+            initializeDragging();
 
-        // to get the instantiated object of the room
-        current_room = wt.join(current_room_name);
-        initializeDragging();
+            // to set z-index
+            const chatBoxes = document.querySelectorAll('.chat-box');
 
-        // to set z-index
-        const chatBoxes = document.querySelectorAll('.chat-box');
-
-        chatBoxes.forEach(chatBox => {
-            chatBox.addEventListener('mousedown', function () {
-                bringToFront(chatBox);
-            });
-        });
-
-        function bringToFront(selectedChatBox) {
-            let maxZ = 0;
             chatBoxes.forEach(chatBox => {
-                const zIndex = parseInt(window.getComputedStyle(chatBox).zIndex) || 0;
-                if (zIndex > maxZ) {
-                    maxZ = zIndex;
-                }
+                chatBox.addEventListener('mousedown', function () {
+                    bringToFront(chatBox);
+                });
             });
-            selectedChatBox.style.zIndex = maxZ + 1;
-        }
+
+            function bringToFront(selectedChatBox) {
+                let maxZ = 0;
+                chatBoxes.forEach(chatBox => {
+                    const zIndex = parseInt(window.getComputedStyle(chatBox).zIndex) || 0;
+                    if (zIndex > maxZ) {
+                        maxZ = zIndex;
+                    }
+                });
+                selectedChatBox.style.zIndex = maxZ + 1;
+            }
 
             // Format selected text with hotkeys
-        function wrapSelection(tag) {
-            const input = document.getElementById("msg-input-" + current_room_name);
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            const text = input.value;
+            function wrapSelection(tag) {
+                const input = document.getElementById("msg-input-" + current_room_name);
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
+                const text = input.value;
 
-            // Apply format only with the text selected
-            if (start !== end) {
-                input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
-                input.setSelectionRange(end + tag.length, end + tag.length);
-            } 
-            input.focus();
-        }
+                // Apply format only with the text selected
+                if (start !== end) {
+                    input.value = text.substring(0, start) + tag + text.substring(start, end) + tag + text.substring(end);
+                    input.setSelectionRange(end + tag.length, end + tag.length);
+                }
+                input.focus();
+            }
 
-        // Handle sending messages on Enter key press
-        const msgInputElement = document.getElementById("msg-input-" + current_room_name);
-        msgInputElement.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                const message = msgInputElement.value.trim();
-                current_room.send(message);
-                msgInputElement.value = '';
+            // Handle sending messages on Enter key press
+            const msgInputElement = document.getElementById("msg-input-" + current_room_name);
+            msgInputElement.addEventListener("keydown", (e) => {
+                // Bold Ctrl + B
+                if (e.ctrlKey && e.key === "b") {
+                    e.preventDefault();
+                    wrapSelection("**");
+                }
+
+                // Italic Ctrl + I
+                if (e.ctrlKey && e.key === "i") {
+                    e.preventDefault();
+                    wrapSelection("*");
+                }
+
+                // Underline Ctrl + U
+                if (e.ctrlKey && e.key === "u") {
+                    e.preventDefault();
+                    wrapSelection("__");
+                }
+
+                // Strikethrough Ctrl + S
+                if (e.ctrlKey && e.key === "s") {
+                    e.preventDefault();
+                    wrapSelection("~~");
+                }
+
+                // Monospace ``
+                if (e.ctrlKey && e.key === "`") {
+                    e.preventDefault();
+                    wrapSelection("`");
+                }
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const message = msgInputElement.value.trim();
+                    if (message !== "") {
+                        current_room.send(message);
+                        message_list[current_room_name].push({ sender: nickname, status: wt.registeredNickname, message: message, timestamp: new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true }) });
+                        localStorage.setItem('message_list', JSON.stringify(message_list));
+                        //  console.log(message_list);
+                        msgInputElement.value = '';
+
+                    }
+                }
+            });
+
+            // document.getElementById("msg-input-" + current_room_name).addEventListener("keydown", (e) => {});
+        });
+
+        // Event listener for minimizing chat boxes using the minimize button
+        document.querySelector('.chat-messages').addEventListener('click', function (event) {
+            const clickedElement = event.target;
+            const elementId = clickedElement.id;
+            let idArray = elementId.split("-");
+            let current_room_name = idArray[idArray.length - 1];
+
+            if (elementId.includes('to-hide')) {
+                const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+                chatBox.classList.add('chat-box-hidden');
             }
         });
 
-        document.getElementById("msg-input-" + current_room_name).addEventListener("keydown", (e) => {
-        // Bold Ctrl + B
-        if (e.ctrlKey && e.key === "b") {
-            e.preventDefault();
-            wrapSelection("**");
-        }
-
-        // Italic Ctrl + I
-        if (e.ctrlKey && e.key === "i") {
-            e.preventDefault();
-            wrapSelection("*"); 
-        }
-
-        // Underline Ctrl + U
-        if (e.ctrlKey && e.key === "u") {
-            e.preventDefault();
-            wrapSelection("__"); 
-        }
-
-        // Strikethrough Ctrl + S
-        if (e.ctrlKey && e.key === "s") {
-            e.preventDefault();
-            wrapSelection("~~"); 
-        }
-
-        // Monospace ``
-        if (e.ctrlKey && e.key === "`") {
-            e.preventDefault();
-            wrapSelection("`");
-        }
+        // show chat-box again when click on siderbar
+        document.getElementById("room-list").addEventListener('click', function (e) {
+            const clickedElement = e.target;
+            const idString = clickedElement.id;
+            console.log(idString)
+            if (idString !== "") {
+                const chatBox = document.getElementById(`chat-box-${idString}`);
+                chatBox.classList.remove('chat-box-hidden');
+            }
         });
-    });
 
-    // Event listener for minimizing chat boxes using the minimize button
-    document.querySelector('.chat-messages').addEventListener('click', function (event) {
-        const clickedElement = event.target;
-        const elementId = clickedElement.id;
-        let idArray = elementId.split("-");
-        let current_room_name = idArray[idArray.length - 1];
+        // Event listener for leave room by using the close button and delete the chat-box
+        document.querySelector('.chat-messages').addEventListener('click', function (event) {
 
-        if (elementId.includes('to-hide')) {
-            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
-            chatBox.classList.add('chat-box-hidden');
-        }
-    });
+            const clickedElement = event.target;
+            const elementId = clickedElement.id;
+            let idArray = elementId.split("-");
+            let current_room_name = idArray[idArray.length - 1];
 
-    // show chat-box again when click on siderbar
-    document.getElementById("room-list").addEventListener('click', function (e) {
-        const clickedElement = e.target;
-        const idString = clickedElement.id;
-        console.log(idString)
-        if (idString !== "") {
-            const chatBox = document.getElementById(`chat-box-${idString}`);
-            chatBox.classList.remove('chat-box-hidden');
-        }
-    });
+            if (elementId.includes('to-leave')) {
+                const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+                wt.leave(current_room_name);
+                document.getElementById(current_room_name).classList.remove('active');
+                chatBox.remove();
+            }
+        });
+    }
+</script>
 
-    // Event listener for leave room by using the close button and delete the chat-box
-    document.querySelector('.chat-messages').addEventListener('click', function (event) {
-
-        const clickedElement = event.target;
-        const elementId = clickedElement.id;
-        let idArray = elementId.split("-");
-        let current_room_name = idArray[idArray.length - 1];
-
-        if (elementId.includes('to-leave')) {
-            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
-            wt.leave(current_room_name);
-            document.getElementById(current_room_name).classList.remove('active');
-            chatBox.remove();
-        }
-    });
-}
-    </script>
-
-    </html>
+</html>
