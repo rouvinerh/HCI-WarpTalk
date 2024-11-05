@@ -1,10 +1,8 @@
-// import { wt } from './js/global-params.js';
 const wt = new WarpTalk("wss", "warp.cs.au.dk/talk/");
 
 let current_room;
 let room_list = [];
 
-// The rooms the user is in now
 let roomUserIsIn = [];
 let checkedInput = "";
 let checkedInputValue = "all";
@@ -24,13 +22,13 @@ let message_list = stored_message_list ? JSON.parse(stored_message_list) : messa
 
 console.log("Connecting to the WarpTalk server ...");
 
-// let nickname = localStorage.getItem('nickName'); // Retrieve the nickname from localStorage
 let nickname;
 wt.connect(connected, nickname);
 if (localStorage.getItem('login') !== null) {
     nickname = localStorage.getItem('login');
+
 }
-// if dont have nickname, then dont show the client-area
+// if dont have nickname, then don't show the client-area
 if (nickname === null || nickname === undefined) {
     document.getElementById('client-area').style.display = 'none';
 }
@@ -41,7 +39,8 @@ let nicknamePassword;
 
 let nicknameAccountValue;
 let nicknamePasswordValue;
-// if there's no nickname while the first page loaded, force users back to the regist page
+
+// if there's no nickname while the first page loaded, go back to login page
 document.addEventListener('DOMContentLoaded', function () {
     if (nickname === null || nickname === undefined) {
         nicknameAccount = document.getElementById('nickname-Account');
@@ -55,7 +54,6 @@ wt.isLoggedIn(function (isLoggedIn) {
     }
 });
 
-// modify
 const nickname_e = document.getElementById("using-nickname");
 nickname_e.addEventListener("click", function (e) {
     let nickname = prompt("What's your (unregistered) nickname?");
@@ -80,10 +78,6 @@ async function connected() {
     console.log("Connection established.");
     nickname = wt.nickname;
     room_list = wt.availableRooms;
-    // let room = wt.join(wt.availableRooms[0].name);
-    // current_room = room;
-
-    // Render rooms, clients, and messages after connecting
     setTimeout(() => {
         renderRooms();
     }, 30);
@@ -182,7 +176,6 @@ function renderRooms() {
         document.getElementById(r).classList.add('active');
 
     });
-
 }
 
 // To Create a new Chat-box
@@ -265,12 +258,8 @@ document.getElementById("room-list").addEventListener('click', function (e) {
     const clickedElement = e.target;
     const idString = clickedElement.id;
     if (idString !== "") {
-        // console.log("Switching to room: " + idString);
-
         room_list.forEach(r => {
             if (idString === r.name) {
-                // wt.leave(current_room.name);
-
                 current_room = wt.join(idString);
                 roomUserIsIn = wt.joinedRooms;
                 addChatBox();
@@ -285,14 +274,12 @@ document.getElementById("room-list").addEventListener('click', function (e) {
                 }
 
                 renderRooms();
-                // document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
-                //     <span style="color:rgb(179, 187, 197);font-size:14px;font-weight:200;"> | ${current_room.description}</span>`;
             }
         });
     }
 });
 
-// Installation of the listner for each rooms to receive messages
+// Installation of the listener for each rooms to receive messages
 function receiveMessage() {
     if (roomUserIsIn === "undefined" || roomUserIsIn === null) {
         return;
@@ -314,7 +301,6 @@ function receiveMessage() {
     });
 }
 
-
 function initializeRadioButtons(chatBoxName) {
     var radios = document.querySelectorAll('input[name="filter-message-' + current_room.name + '"]');
     radios.forEach(function (radio) {
@@ -328,7 +314,6 @@ function initializeRadioButtons(chatBoxName) {
     });
 }
 
-
 function filterMessages(chatBoxName, filterType) {
     const messageListElement = document.getElementById(`message-list-${chatBoxName}`);
     const messages = message_list[chatBoxName] || [];
@@ -336,14 +321,6 @@ function filterMessages(chatBoxName, filterType) {
     // Get the current search query from the input field
     const headerInput = document.getElementById(`header-input-${chatBoxName}`);
     const searchQuery = headerInput.value.trim().toLowerCase();
-
-
-    // clean the history
-    // const messagesObj = JSON.parse(localStorage.getItem('message_list')) || {};
-    // const messages = messagesObj[chatBoxName] || [];
-    // console.log(messages);
-
-    // Clear the current message list
     messageListElement.innerHTML = '';
 
     // according to type to filter the messages => Child scope
@@ -360,7 +337,6 @@ function filterMessages(chatBoxName, filterType) {
         // Check if message content or sender matches the search query
         let searchMatch = true;
         if (searchQuery) {
-            // Make search case-insensitive
             const messageContent = msg.message.toLowerCase();
             const senderName = msg.sender.toLowerCase();
             searchMatch = messageContent.includes(searchQuery) || senderName.includes(searchQuery);
@@ -394,11 +370,11 @@ function filterMessages(chatBoxName, filterType) {
 
 // Handle joining room => joinListener
 function joinRoom() {
-    // for user self
     let current_room_element = document.getElementById("message-list-" + current_room.name)
     if (current_room_element !== null) {
         current_room_element.innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
     }
+
     // Listen to all rooms that have been joined
     current_room.onJoin((room, nickname) => {
         document.getElementById("message-list-" + room.name).innerHTML += 
@@ -590,8 +566,6 @@ function printCurrentClients(room_tmp) {
                 }
             }
         });
-
-        // document.getElementById("msg-input-" + current_room_name).addEventListener("keydown", (e) => {});
     });
 
     // Event listener for minimizing chat boxes using the minimize button
