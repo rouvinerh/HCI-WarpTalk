@@ -1,8 +1,10 @@
+// import { wt } from './js/global-params.js';
 const wt = new WarpTalk("wss", "warp.cs.au.dk/talk/");
 
 let current_room;
 let room_list = [];
 
+// The rooms the user is in now
 let roomUserIsIn = [];
 let checkedInput = "";
 let checkedInputValue = "all";
@@ -20,15 +22,15 @@ let message_list_initial = {
 let stored_message_list = localStorage.getItem("message_list");
 let message_list = stored_message_list ? JSON.parse(stored_message_list) : message_list_initial;
 
-console.log("Connecting to the WarpTalk server ...");
+// console.log("Connecting to the WarpTalk server ...");
 
-let nickname;
+// let nickname = localStorage.getItem('nickName'); // Retrieve the nickname from localStorage
+let nickname= "123dasdsawe";
 wt.connect(connected, nickname);
 if (localStorage.getItem('login') !== null) {
     nickname = localStorage.getItem('login');
-
 }
-// if dont have nickname, then don't show the client-area
+// if dont have nickname, then dont show the client-area
 if (nickname === null || nickname === undefined) {
     document.getElementById('client-area').style.display = 'none';
 }
@@ -39,8 +41,7 @@ let nicknamePassword;
 
 let nicknameAccountValue;
 let nicknamePasswordValue;
-
-// if there's no nickname while the first page loaded, go back to login page
+// if there's no nickname while the first page loaded, force users back to the regist page
 document.addEventListener('DOMContentLoaded', function () {
     if (nickname === null || nickname === undefined) {
         nicknameAccount = document.getElementById('nickname-Account');
@@ -54,6 +55,7 @@ wt.isLoggedIn(function (isLoggedIn) {
     }
 });
 
+// modify
 const nickname_e = document.getElementById("using-nickname");
 nickname_e.addEventListener("click", function (e) {
     let nickname = prompt("What's your (unregistered) nickname?");
@@ -74,10 +76,14 @@ function parseMessage(message) {
 
 // This function is called when the connection to the server is established.
 async function connected() {
-    console.log(wt)
-    console.log("Connection established.");
+    // console.log(wt)
+    // console.log("Connection established.");
     nickname = wt.nickname;
     room_list = wt.availableRooms;
+    // let room = wt.join(wt.availableRooms[0].name);
+    // current_room = room;
+
+    // Render rooms, clients, and messages after connecting
     setTimeout(() => {
         renderRooms();
     }, 30);
@@ -130,7 +136,7 @@ loginForm.addEventListener('submit', (e) => {
 document.getElementById('leave').addEventListener('click', function (e) {
     e.preventDefault();
     localStorage.removeItem('message_list');
-    console.log("logout");
+    // console.log("logout");
     document.getElementById('client-area').style.display = 'none';
     document.getElementById('login-container').style.display = 'block';
     wt.logout();
@@ -161,21 +167,23 @@ function renderRooms() {
     room_list.forEach(r => {
         if (r.name === current_room_name) {
             roomListElement.innerHTML += `
-        <div id="${r.name}" class="channel active">
+        <div id="${r.name}" class="channel active" tabindex="0">
             <span style="color: white; font-size: 13px;">${r.name}</span>
         </div>`;
         } else {
             roomListElement.innerHTML += `
-        <div id="${r.name}" class="channel">
+        <div id="${r.name}" class="channel" tabindex="0">
             <span style="color: white; font-size: 13px;">${r.name}</span>
         </div>`;
         }
     });
 
+
     roomNameUserIsIn.forEach(r => {
         document.getElementById(r).classList.add('active');
 
     });
+
 }
 
 // To Create a new Chat-box
@@ -191,22 +199,21 @@ function addChatBox() {
     }
 
     chatMessagesElement.innerHTML += `
-    <div id="chat-box-${chatBoxName}" class="chat-box">
-        
-                    <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
-    <span class="chat-box-title">${chatBoxName}</span>
+    <div id="chat-box-${chatBoxName}" class="chat-box" role="${chatBoxName}">
+        <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
+            <span class="chat-box-title">${chatBoxName}</span>
 
-    <input type="text" id="header-input-${chatBoxName}" class="header-input" placeholder="Search...">
+            <input type="text" id="header-input-${chatBoxName}" class="header-input" placeholder="Search..." aria-label="Enter keywords to find history">
 
-    <div class="chat-box-header-buttons">
-        <i id="to-hide-${chatBoxName}" class="fa-solid fa-minus fa-xl" style="color: #8a8f98; padding-right: 20px;"></i>
-        <i id="to-leave-${chatBoxName}" class="fa-solid fa-xmark fa-xl" style="color: #8a8f98;"></i>
-    </div>
-</div>
+            <div class="chat-box-header-buttons">
+                <i id="to-hide-${chatBoxName}" class="fa-solid fa-minus fa-xl" tabindex="0" style="color: #8a8f98; padding-right: 20px;"></i>
+                <i id="to-leave-${chatBoxName}" class="fa-solid fa-xmark fa-xl" tabindex="0" style="color: #8a8f98;"></i>
+            </div>
+        </div>
 
 
-                    <div id="checkbox-${chatBoxName}" class="checkbox">
-                        <label style="margin-bottom:10px">Filter message</label>
+                    <fieldset id="checkbox-${chatBoxName}" class="checkbox" role="radiogroup" aria-labelledby="filter-messages-${chatBoxName}">
+                        <legend id="filter-messages-${chatBoxName}" style="margin-bottom:10px">Filter messages</legend>
                         <div class="checkbox-content">
                             <div class="checkbox-item">
                                 <input type="radio" id="checkbox-all-${chatBoxName}" name="filter-message-${chatBoxName}" value="all" checked />
@@ -221,7 +228,9 @@ function addChatBox() {
                                 <label for="checkbox-unregistered-${chatBoxName}">Unregistered</label>
                             </div>
                         </div>
-                    </div>
+                    </fieldset>
+
+
 
                     <div id="message-list-${chatBoxName}" class="message"></div>
                     <div id="client-list-${chatBoxName}" class="client-list"></div>
@@ -258,14 +267,18 @@ document.getElementById("room-list").addEventListener('click', function (e) {
     const clickedElement = e.target;
     const idString = clickedElement.id;
     if (idString !== "") {
+        // // console.log("Switching to room: " + idString);
+
         room_list.forEach(r => {
             if (idString === r.name) {
+                // wt.leave(current_room.name);
+
                 current_room = wt.join(idString);
                 roomUserIsIn = wt.joinedRooms;
                 addChatBox();
 
                 // Avoid duplicating listener additions on hide and leave
-                console.log(current_room)
+                // console.log(current_room)
                 if (current_room.listeners.length === 0) {
                     setTimeout(() => joinRoom(), 50);
                     setTimeout(() => leaveRoom(), 50);
@@ -274,12 +287,14 @@ document.getElementById("room-list").addEventListener('click', function (e) {
                 }
 
                 renderRooms();
+                // document.getElementById("chat-header-text").innerHTML = `&nbsp;${current_room.name}
+                //     <span style="color:rgb(179, 187, 197);font-size:14px;font-weight:200;"> | ${current_room.description}</span>`;
             }
         });
     }
 });
 
-// Installation of the listener for each rooms to receive messages
+// Installation of the listner for each rooms to receive messages
 function receiveMessage() {
     if (roomUserIsIn === "undefined" || roomUserIsIn === null) {
         return;
@@ -289,17 +304,18 @@ function receiveMessage() {
         const current_room_name = room.name;
 
         if (!message_list[current_room_name]) {
-            console.log("create new room")
+            // console.log("create new room")
             message_list[current_room_name] = [];
         }
         if (msg.sender !== nickname) {
             message_list[current_room_name].push({ sender: msg.sender, status: msg.registered, message: msg.message, timestamp: new Date().toLocaleString('en-GB', { hour: 'numeric', minute: 'numeric', hour12: true }) });
             localStorage.setItem('message_list', JSON.stringify(message_list));
         }
-        console.log("!")
+        // console.log("!")
         filterMessages(current_room_name, checkedInputValue);
     });
 }
+
 
 function initializeRadioButtons(chatBoxName) {
     var radios = document.querySelectorAll('input[name="filter-message-' + current_room.name + '"]');
@@ -307,12 +323,13 @@ function initializeRadioButtons(chatBoxName) {
         radio.addEventListener('change', function () {
             checkedInput = document.querySelector('input[name="filter-message-' + current_room.name + '"]:checked');
             checkedInputValue = checkedInput.value;
-            console.log(checkedInputValue);
+            // console.log(checkedInputValue);
 
             filterMessages(chatBoxName, checkedInputValue);
         });
     });
 }
+
 
 function filterMessages(chatBoxName, filterType) {
     const messageListElement = document.getElementById(`message-list-${chatBoxName}`);
@@ -321,6 +338,14 @@ function filterMessages(chatBoxName, filterType) {
     // Get the current search query from the input field
     const headerInput = document.getElementById(`header-input-${chatBoxName}`);
     const searchQuery = headerInput.value.trim().toLowerCase();
+
+
+    // clean the history
+    // const messagesObj = JSON.parse(localStorage.getItem('message_list')) || {};
+    // const messages = messagesObj[chatBoxName] || [];
+    // // console.log(messages);
+
+    // Clear the current message list
     messageListElement.innerHTML = '';
 
     // according to type to filter the messages => Child scope
@@ -337,6 +362,7 @@ function filterMessages(chatBoxName, filterType) {
         // Check if message content or sender matches the search query
         let searchMatch = true;
         if (searchQuery) {
+            // Make search case-insensitive
             const messageContent = msg.message.toLowerCase();
             const senderName = msg.sender.toLowerCase();
             searchMatch = messageContent.includes(searchQuery) || senderName.includes(searchQuery);
@@ -345,7 +371,7 @@ function filterMessages(chatBoxName, filterType) {
         return typeMatch && searchMatch;
     });
 
-    console.log(filteredMessages);
+    // console.log(filteredMessages);
 
     // re-render the message list
     filteredMessages.forEach((msg) => {
@@ -370,11 +396,11 @@ function filterMessages(chatBoxName, filterType) {
 
 // Handle joining room => joinListener
 function joinRoom() {
+    // for user self
     let current_room_element = document.getElementById("message-list-" + current_room.name)
     if (current_room_element !== null) {
         current_room_element.innerHTML += `<div style="font-size:12px;display:flex;justify-content:center;color:grey"> <span>${nickname} joined ${current_room.name}</span></div>`;
     }
-
     // Listen to all rooms that have been joined
     current_room.onJoin((room, nickname) => {
         document.getElementById("message-list-" + room.name).innerHTML += 
@@ -391,7 +417,7 @@ function leaveRoom() {
         document.getElementById("message-list-" + room.name).innerHTML += 
         `<div style="font-size:12px;display:flex;justify-content:center;color:grey"><span>${nickname} left ${room.name}</span></div>`;
         printCurrentClients(room)
-        console.log(room)
+        // console.log(room)
     });
 
 }
@@ -400,7 +426,7 @@ function leaveRoom() {
 // room_tmp design for callback function
 function printCurrentClients(room_tmp) {
     const clients = room_tmp.clients || [];
-    console.log(room_tmp);
+    // console.log(room_tmp);
     let client_list_element = document.getElementById("client-list-" + room_tmp.name);
     client_list_element.innerHTML = ""; // Clear the client list
     client_list_element.innerHTML += `<div class="client-list-header">Client List</div>`; 
@@ -413,7 +439,7 @@ function printCurrentClients(room_tmp) {
     });
 
     function initializeDragging() {
-        console.log("initializeDragging");
+        // console.log("initializeDragging");
         // Use JavaScript's mousedown, mousemove, and mouseup events to implement drag effects
         let currentChatBoxName = 'chat-box-' + current_room.name;
         let currentChartBoxHeaderName = 'chat-box-header-' + current_room.name;
@@ -487,17 +513,6 @@ function printCurrentClients(room_tmp) {
             });
         });
 
-        function bringToFront(selectedChatBox) {
-            let maxZ = 0;
-            chatBoxes.forEach(chatBox => {
-                const zIndex = parseInt(window.getComputedStyle(chatBox).zIndex) || 0;
-                if (zIndex > maxZ) {
-                    maxZ = zIndex;
-                }
-            });
-            selectedChatBox.style.zIndex = maxZ + 1;
-        }
-
         // Format selected text with hotkeys
         function wrapSelection(tag) {
             const input = document.getElementById("msg-input-" + current_room_name);
@@ -561,11 +576,13 @@ function printCurrentClients(room_tmp) {
                         }) 
                     });
                     localStorage.setItem('message_list', JSON.stringify(message_list));
-                    //  console.log(message_list);
+                    //  // console.log(message_list);
                     msgInputElement.value = '';
                 }
             }
         });
+
+        // document.getElementById("msg-input-" + current_room_name).addEventListener("keydown", (e) => {});
     });
 
     // Event listener for minimizing chat boxes using the minimize button
@@ -585,12 +602,31 @@ function printCurrentClients(room_tmp) {
     document.getElementById("room-list").addEventListener('click', function (e) {
         const clickedElement = e.target;
         const idString = clickedElement.id;
-        console.log(idString)
+        // console.log(idString)
         if (idString !== "") {
             const chatBox = document.getElementById(`chat-box-${idString}`);
             chatBox.classList.remove('chat-box-hidden');
         }
     });
+    // 添加键盘事件监听器
+document.querySelector('.chat-messages').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        const targetElement = event.target;
+        const elementId = targetElement.id;
+        let idArray = elementId.split("-");
+        let current_room_name = idArray[idArray.length - 1];
+
+        if (elementId.includes('to-hide')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            chatBox.classList.add('chat-box-hidden');
+        } else if (elementId.includes('to-leave')) {
+            const chatBox = document.getElementById(`chat-box-${current_room_name}`);
+            wt.leave(current_room_name);
+            document.getElementById(current_room_name).classList.remove('active');
+            chatBox.remove();
+        }
+    }
+});
 
     // Event listener for leave room by using the close button and delete the chat-box
     document.querySelector('.chat-messages').addEventListener('click', function (event) {
@@ -606,4 +642,56 @@ function printCurrentClients(room_tmp) {
             chatBox.remove();
         }
     });
+
+    
 }
+
+function bringToFront(selectedChatBox) {
+    console.log(selectedChatBox)
+    const chatBoxes = document.querySelectorAll('.chat-box');
+    let maxZ = 0;
+    
+    chatBoxes.forEach(chatBox => {
+        const zIndex = parseInt(window.getComputedStyle(chatBox).zIndex) || 0;
+        if (zIndex > maxZ) {
+            maxZ = zIndex;
+        }
+    });
+    console.log(maxZ)
+    selectedChatBox.style.zIndex = maxZ + 1;
+    console.log(selectedChatBox.style.zIndex)
+}
+
+// using enter to open a channel and close others
+document.getElementById("room-list").addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+        const focusedElement = document.activeElement;
+        if (focusedElement && focusedElement.classList.contains('channel')) {
+            const roomName = focusedElement.id; // Name of the currently focused room
+            const chatBox = document.getElementById(`chat-box-${roomName}`);
+     
+            // Loop through all rooms and exit rooms that are different from the current room
+            room_list.forEach(r => {
+                if (r.name !== roomName) {
+                    // Exit other rooms
+                    wt.leave(r.name);
+                    const otherChatBox = document.getElementById(`chat-box-${r.name}`);
+                    if (otherChatBox) {
+                        otherChatBox.remove();
+                    }
+                    document.getElementById(r.name).classList.remove('active');
+                }
+            });
+
+            // Bring the current room to the front
+            if (chatBox) {
+                bringToFront(chatBox);
+            }
+
+            // Simulate a click event to enter the current room
+            focusedElement.click();
+        }
+    }
+});
+
+

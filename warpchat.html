@@ -5,11 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Warpchat</title>
-    <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/silly-skunk-44/warpchat.css">
+    <link rel="stylesheet" type="text/css" href="warp_chat_style.css">
+    <!-- <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/stale-fly-76/warp_chat_style.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://warp.cs.au.dk/wet-eagle-13/warp_chat_style.css"> -->
 </head>
 
 <body>
+
+    <!-- <div class="server-side">
+        <span>Aarhus Universitet :)</span>
+    </div> -->
+
     <div class="channel-side">
+        <!-- Channel List -->
         <div class="channel-list">
             <div style="padding-top: 15px; padding-left: 15px; padding-right: 15px;">
                 <div class="channel-header-container">
@@ -17,7 +25,7 @@
                         alt="authentication">
                     <span>Warp Talk</span>
                 </div>
-                <div id="room-list"></div>
+                <nav id="room-list"></nav>
             </div>
 
             <div
@@ -36,19 +44,31 @@
             </div>
         </div>
         <div style="display: flex;width:100vw">
+            <!-- Chat Area -->
             <div class="chat-area">
-                <div class="chat-messages">
+                <!-- Chat Header -->
+
+                <!-- Chat Messages -->
+                <main class="chat-messages">
+
+                    <!-- login-form -->
                     <div id="login-container" class="login-container">
                         <h1>Login</h1>
                         <form id="login-Form">
+                            <label style="color:black;padding:5px" for="nickname-Account">Nickname:</label>
                             <input id="nickname-Account" type="text" placeholder="Enter your Nickname" />
+
+                            <label style="color:black;padding:5px" for="nickname-Password">Password:</label>
                             <input id="nickname-Password" type="password" placeholder="Enter your password" />
-                            <button type="submit">Login</button>
+
+                            <button aria-label="Login to Warpchat" type="submit">Login</button>
                         </form>
                         <span id="using-nickname"
                             style="display: flex;justify-content:center;margin-top:10px;color:blue;cursor:pointer">
                             Use an unregistered nickname</span>
                     </div>
+
+                    <!-- Chat Box Presenting different chat boxes -->
                     <div style="display: none;" id="chat-box" class="chat-box">
                         <div id="chat-box-header" class="chat-box-header">
                             <span style="align-items:center">HELP</span>
@@ -60,27 +80,30 @@
 
                         <div class="chat-content">
                             <div id="message-list" class="message"></div>
-                            <div id="client-list" class="client-list"></div>
+                            <div id="client-list" class="client-list" tabindex="0"></div>
                         </div>
 
                         <div class="message-Input-Area">
                             <div style="position:relative;width: 96%;margin-left: 2%">
                                 <div class="message-input">
-                                    <input id="msg-input" type="text" placeholder="Say hello to everyone">
+                                    <input id="msg-input" type="text" placeholder="Say hello to everyone"
+                                        aria-label="Message entry field" aria-describedby="msg-input-desc" />
+                                </div>
+                                <div
+                                    style="width:7%;display:none;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
+                                    <span id="send-button" style="color: white; font-size: 16px;">send</span>
                                 </div>
                             </div>
-                            <div
-                                style="width:7%;display:none;justify-content:center;align-items:center; background-color: #40444B;border-radius:10px;margin-bottom:10px;margin-left:1vw;cursor: pointer;">
-                                <span id="send-button" style="color: white; font-size: 16px;">send</span>
-                            </div>
                         </div>
-                    </div>
-                </div>
+                </main>
             </div>
         </div>
     </div>
-</body> 
+</body>
+<!-- Load your custom JavaScript after the library -->
 <script src="https://kit.fontawesome.com/c0961f1ff3.js" crossorigin="anonymous"></script>
 <script src="https://warp.cs.au.dk/libs/warptalk.js" type="application/javascript"></script>
-<script src="https://warp.cs.au.dk/silly-skunk-44/warpchat.js" type="application/javascript"></script>
+<!--<script src="https://warp.cs.au.dk/stale-fly-76/warpchat.js" type="application/javascript"></script> -->
+<script src="warpchat.js" type="application/javascript"></script>
+
 </html>
