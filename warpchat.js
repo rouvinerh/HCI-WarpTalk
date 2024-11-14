@@ -25,7 +25,7 @@ let message_list = stored_message_list ? JSON.parse(stored_message_list) : messa
 // console.log("Connecting to the WarpTalk server ...");
 
 // let nickname = localStorage.getItem('nickName'); // Retrieve the nickname from localStorage
-let nickname= "123dasdsawe";
+let nickname;
 wt.connect(connected, nickname);
 if (localStorage.getItem('login') !== null) {
     nickname = localStorage.getItem('login');
