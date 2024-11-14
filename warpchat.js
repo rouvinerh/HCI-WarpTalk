@@ -199,7 +199,7 @@ function addChatBox() {
     }
 
     chatMessagesElement.innerHTML += `
-    <div id="chat-box-${chatBoxName}" class="chat-box" role="${chatBoxName}">
+    <div id="chat-box-${chatBoxName}" class="chat-box" role="log">
         <div id="chat-box-header-${chatBoxName}" class="chat-box-header">
             <span class="chat-box-title">${chatBoxName}</span>
 
@@ -238,7 +238,12 @@ function addChatBox() {
                     <div style="display: flex;">
                         <div style="position:relative;width: 96%;margin-left: 2%">
                             <div class="message-input">
-                                <input id="msg-input-${chatBoxName}" type="text" placeholder="Say hello to everyone">
+                                <input
+                                    id="msg-input-${chatBoxName}"
+                                    type="text"
+                                    placeholder="Say hello to everyone"
+                                    aria-label="Message input"
+                                >
                             </div>
                         </div>
                         <div
@@ -378,13 +383,13 @@ function filterMessages(chatBoxName, filterType) {
         let messageContent;
         if (msg.status) {
             messageContent = `<div style="margin-left: 10px; margin-top: 10px">
-            <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}(registered)</span>
+            <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : 'while'}; font-size: 17px">${msg.sender}(registered)</span>
             <span class="timestamp">${msg.timestamp}</span>
             <div class="content">${parseMessage(msg.message)}</div>
         </div>`;
         } else {
             messageContent = `<div style="margin-left: 10px; margin-top: 10px">
-            <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : '#518948'}; font-size: 17px">${msg.sender}</span>
+            <span style="font-weight: 500; color: ${msg.sender === nickname ? '#d29e4f' : 'while'}; font-size: 17px">${msg.sender}</span>
             <span class="timestamp">${msg.timestamp}</span>
             <div class="content">${parseMessage(msg.message)}</div>
         </div>`;

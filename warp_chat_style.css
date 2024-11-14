@@ -256,7 +256,7 @@ width: 100%;
 
 .message .timestamp {
     font-size: 10px;
-    color: #72767D;
+    color: #f5f5f5;
 }
 
 .message-input input::placeholder {
