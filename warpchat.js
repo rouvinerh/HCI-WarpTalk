@@ -241,7 +241,7 @@ function addChatBox() {
                                 <input
                                     id="msg-input-${chatBoxName}"
                                     type="text"
-                                    placeholder="Say hello to everyone"
+                                    placeholder="Send a message. Use hotkeys to format text (ie. Ctrl+B for bolding)."
                                     aria-label="Message input"
                                 >
                             </div>
